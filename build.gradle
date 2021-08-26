@@ -55,7 +55,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                examplemod {
+                smalltales {
                     source sourceSets.main
                 }
             }
@@ -71,7 +71,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                examplemod {
+                smalltales {
                     source sourceSets.main
                 }
             }
@@ -91,7 +91,7 @@ minecraft {
             environment 'target', 'fmluserdevdata'
 
             mods {
-                examplemod {
+                smalltales {
                     source sourceSets.main
                 }
             }
