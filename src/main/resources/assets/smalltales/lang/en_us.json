@@ -1,0 +1,11 @@
+{
+    "block.smalltales.storypoint": "Story Point",
+    "item.smalltales.the_story": "The Story",
+
+    "itemGroup.smalltales": "SmallTales",
+    "message.smalltales.shiftmessage": "<Press Shift>",
+
+    "message.smalltales.storypoint.header": "A marker for a story point",
+    "message.smalltales.the_story.header": "A notebook containing the story for the player to read"
+}
+
