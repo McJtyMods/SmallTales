@@ -1,6 +1,5 @@
 package com.mcjty.smalltales.datagen;
 
-import com.mcjty.smalltales.modules.signs.StoryModule;
 import mcjty.lib.datagen.BaseLootTableProvider;
 import net.minecraft.data.DataGenerator;
 

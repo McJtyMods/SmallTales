@@ -1,7 +1,6 @@
-package com.mcjty.smalltales.modules.signs;
+package com.mcjty.smalltales.modules.story;
 
-import com.mcjty.smalltales.modules.signs.client.TheStoryGui;
-import com.mcjty.smalltales.modules.signs.items.TheStoryItem;
+import com.mcjty.smalltales.modules.story.items.TheStoryItem;
 import mcjty.lib.modules.IModule;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -21,9 +20,9 @@ public class StoryModule implements IModule {
 
     @Override
     public void initClient(FMLClientSetupEvent event) {
-        event.enqueueWork(() -> {
-            TheStoryGui.register();
-        });
+//        event.enqueueWork(() -> {
+//            TheStoryGui.register();
+//        });
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.mcjty.smalltales.setup;
 
-import com.mcjty.smalltales.modules.signs.StoryModule;
+import com.mcjty.smalltales.modules.story.StoryModule;
 import mcjty.lib.setup.DefaultModSetup;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;

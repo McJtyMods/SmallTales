@@ -1,7 +1,7 @@
 package com.mcjty.smalltales.datagen;
 
 import com.mcjty.smalltales.SmallTales;
-import com.mcjty.smalltales.modules.signs.StoryModule;
+import com.mcjty.smalltales.modules.story.StoryModule;
 import mcjty.lib.datagen.BaseItemModelProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.ExistingFileHelper;

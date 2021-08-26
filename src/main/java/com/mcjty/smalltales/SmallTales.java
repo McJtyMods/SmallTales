@@ -1,6 +1,6 @@
 package com.mcjty.smalltales;
 
-import com.mcjty.smalltales.modules.signs.StoryModule;
+import com.mcjty.smalltales.modules.story.StoryModule;
 import com.mcjty.smalltales.setup.Config;
 import com.mcjty.smalltales.setup.ModSetup;
 import com.mcjty.smalltales.setup.Registration;
