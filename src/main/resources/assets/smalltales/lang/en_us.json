@@ -1,11 +1,14 @@
 {
     "block.smalltales.storypoint": "Story Point",
     "item.smalltales.the_story": "The Story",
+    "item.smalltales.story_chapter": "Story Chapter",
 
     "itemGroup.smalltales": "SmallTales",
     "message.smalltales.shiftmessage": "<Press Shift>",
 
     "message.smalltales.storypoint.header": "A marker for a story point",
-    "message.smalltales.the_story.header": "A notebook containing the story for the player to read"
+    "message.smalltales.the_story.header": "A notebook containing the story for the player to read",
+    "message.smalltales.story_chapter.header": "A chapter in the story",
+    "message.smalltales.story_chapter.name": "Name: "
 }
 

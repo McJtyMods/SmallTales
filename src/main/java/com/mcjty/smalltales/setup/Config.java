@@ -1,40 +1,63 @@
 package com.mcjty.smalltales.setup;
 
 
+import com.mcjty.smalltales.modules.story.StoryTextParser;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.Builder;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Config {
 
-    public static final Builder CLIENT_BUILDER = new Builder();
-
+    public static ForgeConfigSpec SERVER_CONFIG;
     public static ForgeConfigSpec CLIENT_CONFIG;
 
-    public static ForgeConfigSpec.IntValue ICONS;
-    public static ForgeConfigSpec.IntValue ICON_SIZE;
-    public static ForgeConfigSpec.IntValue HORIZONTAL_ICONS;
-    public static ForgeConfigSpec.IntValue VERTICAL_ICONS;
+    private static ForgeConfigSpec.ConfigValue<List<? extends String>> STORY_PAGES;
+    private static Map<String, ITextComponent> storyPages = null;
 
     public static void register() {
-        CLIENT_BUILDER.comment("General settings").push("general");
+        registerClientConfigs();
+        registerServerConfigs();
+    }
 
-        ICONS = CLIENT_BUILDER
-                .comment("Number of icons on the icon sheet (not including the empty icon at 0,0)")
-                .defineInRange("icons", 28, 1, 1024);
-        ICON_SIZE = CLIENT_BUILDER
-                .comment("Size of an individual icon")
-                .defineInRange("iconSize", 32, 2, 512);
-        HORIZONTAL_ICONS = CLIENT_BUILDER
-                .comment("Horizontal numbers of icons on the signs.png icon sheet")
-                .defineInRange("horizontalIcons", 8, 1, 128);
-        VERTICAL_ICONS = CLIENT_BUILDER
-                .comment("Vertical numbers of icons on the signs.png icon sheet")
-                .defineInRange("verticalIcons", 8, 1, 128);
+    private static void registerClientConfigs() {
+        Builder builder = new Builder();
 
-        CLIENT_CONFIG = CLIENT_BUILDER.build();
+        builder.comment("General settings").push("general");
+        builder.pop();
+        CLIENT_CONFIG = builder.build();
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, CLIENT_CONFIG);
+    }
+
+    private static void registerServerConfigs() {
+        Builder builder = new Builder();
+
+        builder.comment("The story pages").push("story");
+        STORY_PAGES = builder
+                .comment("A list of story pages")
+                .defineList("storyPages", Collections.emptyList(), s -> s instanceof String);
+        builder.pop();
+        SERVER_CONFIG = builder.build();
+
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, SERVER_CONFIG);
+    }
+
+    public static Map<String, ITextComponent> getStoryPages() {
+        if (storyPages == null) {
+            storyPages = new HashMap<>();
+            for (String s : STORY_PAGES.get()) {
+                String[] split = StringUtils.split(s, "=", 2);
+                storyPages.put(split[0], StoryTextParser.parse(split[1]));
+            }
+        }
+        return storyPages;
     }
 }

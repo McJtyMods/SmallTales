@@ -15,6 +15,7 @@ public class Items extends BaseItemModelProvider {
     @Override
     protected void registerModels() {
         itemGenerated(StoryModule.THE_STORY.get(), "item/the_story");
+        itemGenerated(StoryModule.STORY_CHAPTER.get(), "item/story_chapter");
     }
 
     @Override

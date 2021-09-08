@@ -1,6 +1,7 @@
 package com.mcjty.smalltales.setup;
 
 import com.mcjty.smalltales.SmallTales;
+import com.mcjty.smalltales.modules.story.network.PacketSyncStory;
 import mcjty.lib.network.PacketHandler;
 import mcjty.lib.network.PacketSendClientCommand;
 import mcjty.lib.network.PacketSendServerCommand;
@@ -32,11 +33,11 @@ public class Messages {
 
         INSTANCE = net;
 
-//        net.messageBuilder(PacketUpdateSignData.class, id())
-//                .encoder(PacketUpdateSignData::toBytes)
-//                .decoder(PacketUpdateSignData::new)
-//                .consumer(PacketUpdateSignData::handle)
-//                .add();
+        net.messageBuilder(PacketSyncStory.class, id())
+                .encoder(PacketSyncStory::toBytes)
+                .decoder(PacketSyncStory::new)
+                .consumer(PacketSyncStory::handle)
+                .add();
 
         PacketHandler.registerStandardMessages(id(), net);
     }

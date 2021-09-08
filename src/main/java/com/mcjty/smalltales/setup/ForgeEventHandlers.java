@@ -1,7 +1,9 @@
 package com.mcjty.smalltales.setup;
 
 import com.mcjty.smalltales.SmallTales;
+import com.mcjty.smalltales.commands.ModCommands;
 import com.mcjty.smalltales.modules.story.items.TheStoryItem;
+import com.mcjty.smalltales.modules.story.network.PacketSyncStory;
 import com.mcjty.smalltales.playerdata.PlayerProperties;
 import com.mcjty.smalltales.playerdata.PlayerStory;
 import com.mcjty.smalltales.playerdata.PropertiesDispatcher;
@@ -13,11 +15,17 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class ForgeEventHandlers {
+
+    @SubscribeEvent
+    public void registerCommands(RegisterCommandsEvent event) {
+        ModCommands.register(event.getDispatcher());
+    }
 
     @SubscribeEvent
     public void onPlayerInteract(PlayerInteractEvent.RightClickBlock event) {
@@ -52,6 +60,11 @@ public class ForgeEventHandlers {
                 });
             });
         }
+    }
+
+    @SubscribeEvent
+    public void onPlayerLogon(PlayerEvent.PlayerLoggedInEvent event) {
+        event.getPlayer().getCapability(PlayerProperties.PLAYER_STORY).ifPresent(story -> PacketSyncStory.syncStory(story, event.getPlayer()));
     }
 }
 
