@@ -1,7 +1,7 @@
 {
-    "block.smalltales.storypoint": "Story Point",
+    "block.smalltales.story_anchor": "Story Anchor",
     "item.smalltales.the_story": "The Story",
-    "item.smalltales.story_chapter": "Story Chapter",
+    "item.smalltales.story_chapter": "Chapter",
 
     "itemGroup.smalltales": "SmallTales",
     "message.smalltales.shiftmessage": "<Press Shift>",

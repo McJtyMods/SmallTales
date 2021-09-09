@@ -1,5 +1,6 @@
 package com.mcjty.smalltales.datagen;
 
+import com.mcjty.smalltales.modules.story.StoryModule;
 import mcjty.lib.datagen.BaseLootTableProvider;
 import net.minecraft.data.DataGenerator;
 
@@ -11,6 +12,7 @@ public class LootTables extends BaseLootTableProvider {
 
     @Override
     protected void addTables() {
+        addStandardTable(StoryModule.STORY_ANCHOR.get());
     }
 
     @Override
