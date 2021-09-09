@@ -3,6 +3,7 @@ package com.mcjty.smalltales.modules.story;
 import com.mcjty.smalltales.modules.story.blocks.StoryAnchorBlock;
 import com.mcjty.smalltales.modules.story.blocks.StoryAnchorTile;
 import com.mcjty.smalltales.modules.story.items.ChapterItem;
+import com.mcjty.smalltales.modules.story.items.ConfiguratorItem;
 import com.mcjty.smalltales.modules.story.items.TheStoryItem;
 import mcjty.lib.modules.IModule;
 import net.minecraft.item.BlockItem;
@@ -17,6 +18,7 @@ public class StoryModule implements IModule {
 
     public static final RegistryObject<TheStoryItem> THE_STORY = ITEMS.register("the_story", TheStoryItem::new);
     public static final RegistryObject<ChapterItem> STORY_CHAPTER = ITEMS.register("story_chapter", ChapterItem::new);
+    public static final RegistryObject<ConfiguratorItem> CONFIGURATOR = ITEMS.register("configurator", ConfiguratorItem::new);
 
     public static final RegistryObject<StoryAnchorBlock> STORY_ANCHOR = BLOCKS.register("story_anchor", StoryAnchorBlock::new);
     public static final RegistryObject<BlockItem> STORY_ANCHOR_ITEM = ITEMS.register("story_anchor", () -> new BlockItem(STORY_ANCHOR.get(), createStandardProperties()));

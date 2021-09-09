@@ -1,0 +1,13 @@
+
+#The story pages
+[story]
+	#A list of chapters
+	chapters = [
+	"main={#}Main page{}{p}{p}This is the main page. Let's see if we can have a lot of layout here. What about {-}old{}new lines and so on?{p}{p}This is a {_}{4}red{} text!",
+	"discovered={#}Discovered{}{p}{p}Here is what we discovered so far. We {_}discovered{} if we {/}discovered{} something"
+	]
+	messages = [
+	"warn=This place looks {#}dangerous!{}",
+	"safety=Here it is {/}safe{}"
+	]
+

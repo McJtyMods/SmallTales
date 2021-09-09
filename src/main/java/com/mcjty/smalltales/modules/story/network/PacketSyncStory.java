@@ -1,6 +1,6 @@
 package com.mcjty.smalltales.modules.story.network;
 
-import com.mcjty.smalltales.playerdata.PlayerProperties;
+import com.mcjty.smalltales.playerdata.StoryTools;
 import com.mcjty.smalltales.playerdata.PlayerStory;
 import com.mcjty.smalltales.setup.Messages;
 import mcjty.lib.McJtyLib;
@@ -37,7 +37,7 @@ public class PacketSyncStory {
 
     public boolean handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            McJtyLib.proxy.getClientPlayer().getCapability(PlayerProperties.PLAYER_STORY).ifPresent(story -> {
+            McJtyLib.proxy.getClientPlayer().getCapability(StoryTools.PLAYER_STORY).ifPresent(story -> {
                 story.reset();
                 discoveredPages.forEach(story::addDiscoveredPage);
             });

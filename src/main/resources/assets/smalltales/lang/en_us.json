@@ -1,14 +1,17 @@
 {
     "block.smalltales.story_anchor": "Story Anchor",
+    "item.smalltales.configurator": "Story Configurator",
     "item.smalltales.the_story": "The Story",
     "item.smalltales.story_chapter": "Chapter",
 
     "itemGroup.smalltales": "SmallTales",
     "message.smalltales.shiftmessage": "<Press Shift>",
 
-    "message.smalltales.storypoint.header": "A marker for a story point",
+    "message.smalltales.configurator.header": "With this tool you can configure story anchors",
+    "message.smalltales.story_anchor.header": "A marker for a story point",
     "message.smalltales.the_story.header": "A notebook containing the story for the player to read",
     "message.smalltales.story_chapter.header": "A chapter in the story",
-    "message.smalltales.story_chapter.name": "Name: "
+    "message.smalltales.story_chapter.chapter": "Chapter: ",
+    "message.smalltales.story_chapter.message": "MEssage: "
 }
 

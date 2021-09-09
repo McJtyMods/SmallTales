@@ -22,8 +22,7 @@ import static mcjty.lib.builder.TooltipBuilder.key;
 public class TheStoryItem extends Item implements ITooltipSettings {
 
     private final Lazy<TooltipBuilder> tooltipBuilder = () -> new TooltipBuilder()
-            .info(key("message.smalltales.shiftmessage"))
-            .infoShift(header());
+            .info(header());
 
     public TheStoryItem() {
         super(new Properties()

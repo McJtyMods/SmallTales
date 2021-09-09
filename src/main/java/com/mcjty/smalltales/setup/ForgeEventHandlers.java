@@ -4,7 +4,7 @@ import com.mcjty.smalltales.SmallTales;
 import com.mcjty.smalltales.commands.ModCommands;
 import com.mcjty.smalltales.modules.story.items.TheStoryItem;
 import com.mcjty.smalltales.modules.story.network.PacketSyncStory;
-import com.mcjty.smalltales.playerdata.PlayerProperties;
+import com.mcjty.smalltales.playerdata.StoryTools;
 import com.mcjty.smalltales.playerdata.PlayerStory;
 import com.mcjty.smalltales.playerdata.PropertiesDispatcher;
 import net.minecraft.entity.Entity;
@@ -43,7 +43,7 @@ public class ForgeEventHandlers {
     @SubscribeEvent
     public void onEntityConstructing(AttachCapabilitiesEvent<Entity> event){
         if (event.getObject() instanceof PlayerEntity) {
-            if (!event.getObject().getCapability(PlayerProperties.PLAYER_STORY).isPresent()) {
+            if (!event.getObject().getCapability(StoryTools.PLAYER_STORY).isPresent()) {
                 event.addCapability(new ResourceLocation(SmallTales.MODID, "story"), new PropertiesDispatcher());
             }
         }
@@ -53,9 +53,9 @@ public class ForgeEventHandlers {
     public void onPlayerCloned(PlayerEvent.Clone event) {
         if (event.isWasDeath()) {
             // We need to copyFrom the capabilities
-            LazyOptional<PlayerStory> capability = event.getOriginal().getCapability(PlayerProperties.PLAYER_STORY);
+            LazyOptional<PlayerStory> capability = event.getOriginal().getCapability(StoryTools.PLAYER_STORY);
             capability.ifPresent(oldStore -> {
-                event.getPlayer().getCapability(PlayerProperties.PLAYER_STORY).ifPresent(newStore -> {
+                event.getPlayer().getCapability(StoryTools.PLAYER_STORY).ifPresent(newStore -> {
                     newStore.copyFrom(oldStore);
                 });
             });
@@ -64,7 +64,7 @@ public class ForgeEventHandlers {
 
     @SubscribeEvent
     public void onPlayerLogon(PlayerEvent.PlayerLoggedInEvent event) {
-        event.getPlayer().getCapability(PlayerProperties.PLAYER_STORY).ifPresent(story -> PacketSyncStory.syncStory(story, event.getPlayer()));
+        event.getPlayer().getCapability(StoryTools.PLAYER_STORY).ifPresent(story -> PacketSyncStory.syncStory(story, event.getPlayer()));
     }
 }
 

@@ -19,8 +19,11 @@ public class Config {
     public static ForgeConfigSpec SERVER_CONFIG;
     public static ForgeConfigSpec CLIENT_CONFIG;
 
-    private static ForgeConfigSpec.ConfigValue<List<? extends String>> STORY_PAGES;
-    private static Map<String, ITextComponent> storyPages = null;
+    private static ForgeConfigSpec.ConfigValue<List<? extends String>> CHAPTERS;
+    private static Map<String, ITextComponent> chapters = null;
+
+    private static ForgeConfigSpec.ConfigValue<List<? extends String>> MESSAGES;
+    private static Map<String, ITextComponent> messages = null;
 
     public static void register() {
         registerClientConfigs();
@@ -40,24 +43,38 @@ public class Config {
     private static void registerServerConfigs() {
         Builder builder = new Builder();
 
-        builder.comment("The story pages").push("story");
-        STORY_PAGES = builder
-                .comment("A list of story pages")
-                .defineList("storyPages", Collections.emptyList(), s -> s instanceof String);
+        builder.comment("The chapters and messages").push("story");
+        CHAPTERS = builder
+                .comment("A list of chapters")
+                .defineList("chapters", Collections.emptyList(), s -> s instanceof String);
+        MESSAGES = builder
+                .comment("A list of messages")
+                .defineList("messages", Collections.emptyList(), s -> s instanceof String);
         builder.pop();
         SERVER_CONFIG = builder.build();
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, SERVER_CONFIG);
     }
 
-    public static Map<String, ITextComponent> getStoryPages() {
-        if (storyPages == null) {
-            storyPages = new HashMap<>();
-            for (String s : STORY_PAGES.get()) {
+    public static Map<String, ITextComponent> getChapters() {
+        if (chapters == null) {
+            chapters = new HashMap<>();
+            for (String s : CHAPTERS.get()) {
                 String[] split = StringUtils.split(s, "=", 2);
-                storyPages.put(split[0], StoryTextParser.parse(split[1]));
+                chapters.put(split[0], StoryTextParser.parse(split[1]));
             }
         }
-        return storyPages;
+        return chapters;
+    }
+
+    public static Map<String, ITextComponent> getMessages() {
+        if (messages == null) {
+            messages = new HashMap<>();
+            for (String s : MESSAGES.get()) {
+                String[] split = StringUtils.split(s, "=", 2);
+                messages.put(split[0], StoryTextParser.parse(split[1]));
+            }
+        }
+        return messages;
     }
 }

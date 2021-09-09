@@ -1,37 +1,31 @@
 package com.mcjty.smalltales.modules.story.items;
 
 import com.mcjty.smalltales.SmallTales;
-import com.mcjty.smalltales.modules.story.blocks.StoryAnchorTile;
-import com.mcjty.smalltales.modules.story.network.PacketSyncStory;
-import com.mcjty.smalltales.playerdata.PlayerProperties;
+import com.mcjty.smalltales.playerdata.StoryTools;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Util;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Lazy;
 
 import java.util.List;
-import java.util.Optional;
 
-import static mcjty.lib.builder.TooltipBuilder.*;
+import static mcjty.lib.builder.TooltipBuilder.header;
+import static mcjty.lib.builder.TooltipBuilder.parameter;
 
 public class ChapterItem extends Item implements ITooltipSettings {
 
     private final Lazy<TooltipBuilder> tooltipBuilder = () -> new TooltipBuilder()
-            .info(key("message.smalltales.shiftmessage"))
-            .infoShift(header(), parameter("name", this::getChapterString));
+            .info(header(),
+                    parameter("chapter", this::getChapterString),
+                    parameter("message", this::getMessageString));
 
     public ChapterItem() {
         super(new Properties()
@@ -39,16 +33,30 @@ public class ChapterItem extends Item implements ITooltipSettings {
                 .tab(SmallTales.setup.getTab()));
     }
 
+    public String getMessageString(ItemStack stack) {
+        String chapter = getChapter(stack);
+        return chapter == null ? "<unknown>" : chapter;
+    }
     public String getChapterString(ItemStack stack) {
-        return getChapter(stack).orElse("<unknown>");
+        String message = getMessage(stack);
+        return message == null ? "<unknown>" : message;
     }
 
-    public Optional<String> getChapter(ItemStack stack) {
+    public String getChapter(ItemStack stack) {
         CompoundNBT tag = stack.getTag();
         if (tag != null) {
-            return Optional.of(tag.getString("chapter"));
+            return tag.getString("chapter");
         } else {
-            return Optional.empty();
+            return null;
+        }
+    }
+
+    public String getMessage(ItemStack stack) {
+        CompoundNBT tag = stack.getTag();
+        if (tag != null) {
+            return tag.getString("message");
+        } else {
+            return null;
         }
     }
 
@@ -60,28 +68,10 @@ public class ChapterItem extends Item implements ITooltipSettings {
     }
 
     @Override
-    public ActionResultType useOn(ItemUseContext context) {
-        TileEntity be = context.getLevel().getBlockEntity(context.getClickedPos());
-        if (be instanceof StoryAnchorTile) {
-            getChapter(context.getItemInHand()).ifPresent(((StoryAnchorTile) be)::setChapter);
-        }
-        return super.useOn(context);
-    }
-
-    @Override
     public ActionResult<ItemStack> use(World level, PlayerEntity player, Hand hand) {
         if (!level.isClientSide()) {
             ItemStack stack = player.getItemInHand(hand);
-            getChapter(stack).ifPresent(chapter -> {
-                player.getCapability(PlayerProperties.PLAYER_STORY).ifPresent(story -> {
-                    if (story.addDiscoveredPage(chapter)) {
-                        player.sendMessage(new StringTextComponent("You discover " + chapter + "!"), Util.NIL_UUID);
-                    } else {
-                        player.sendMessage(new StringTextComponent("You already known " + chapter + "!"), Util.NIL_UUID);
-                    }
-                    PacketSyncStory.syncStory(story, player);
-                });
-            });
+            StoryTools.acquireKnowledge(player, getChapter(stack), getMessage(stack),true);
         }
         return super.use(level, player, hand);
     }

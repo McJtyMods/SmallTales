@@ -1,7 +1,7 @@
 package com.mcjty.smalltales.modules.story.client;
 
 import com.mcjty.smalltales.SmallTales;
-import com.mcjty.smalltales.playerdata.PlayerProperties;
+import com.mcjty.smalltales.playerdata.StoryTools;
 import com.mcjty.smalltales.playerdata.PlayerStory;
 import com.mcjty.smalltales.setup.Config;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -13,6 +13,7 @@ import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 
 import java.util.Collections;
 import java.util.List;
@@ -78,17 +79,21 @@ public class GuiStory extends Screen {
                 this.blit(matrixStack, relX+25, relY-15, u, 212, 21, 14);
             }
 
-            ITextComponent page = Config.getStoryPages().get(discoveredPages.get(currentPage));
-            List<IReorderingProcessor> split = this.font.split(page, WIDTH - 30);
-            split.forEach(line -> {
-                this.font.draw(matrixStack, line, left, yy[0], 0x000000);
-                yy[0] += 10;
-            });
+            ITextComponent page = Config.getChapters().get(discoveredPages.get(currentPage));
+            if (page != null) {
+                List<IReorderingProcessor> split = this.font.split(page, WIDTH - 30);
+                split.forEach(line -> {
+                    this.font.draw(matrixStack, line, left, yy[0], 0x000000);
+                    yy[0] += 10;
+                });
+            } else {
+                this.font.draw(matrixStack, new StringTextComponent("Invalid chapter!").withStyle(TextFormatting.RED), left, yy[0], 0x000000);
+            }
         }
     }
 
     private List<String> getDiscoveredPages() {
-        List<String> discoveredPages = Minecraft.getInstance().player.getCapability(PlayerProperties.PLAYER_STORY)
+        List<String> discoveredPages = Minecraft.getInstance().player.getCapability(StoryTools.PLAYER_STORY)
                 .map(PlayerStory::getDiscoveredPages)
                 .orElse(Collections.emptyList());
         return discoveredPages;

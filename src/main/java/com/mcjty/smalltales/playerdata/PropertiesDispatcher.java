@@ -17,7 +17,7 @@ public class PropertiesDispatcher implements ICapabilityProvider, INBTSerializab
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap) {
-        if (cap == PlayerProperties.PLAYER_STORY) {
+        if (cap == StoryTools.PLAYER_STORY) {
             return LazyOptional.of(() -> (T) playerStory);
         }
         return LazyOptional.empty();

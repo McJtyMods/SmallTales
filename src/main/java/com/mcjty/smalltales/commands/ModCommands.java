@@ -2,7 +2,7 @@ package com.mcjty.smalltales.commands;
 
 import com.mcjty.smalltales.SmallTales;
 import com.mcjty.smalltales.modules.story.network.PacketSyncStory;
-import com.mcjty.smalltales.playerdata.PlayerProperties;
+import com.mcjty.smalltales.playerdata.StoryTools;
 import com.mcjty.smalltales.setup.Config;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -48,7 +48,7 @@ public class ModCommands {
                         .executes(context -> {
                             String page = context.getArgument("page", String.class);
                             ServerPlayerEntity player = context.getSource().getPlayerOrException();
-                            player.getCapability(PlayerProperties.PLAYER_STORY).ifPresent(story -> {
+                            player.getCapability(StoryTools.PLAYER_STORY).ifPresent(story -> {
                                 story.addDiscoveredPage(page);
                                 PacketSyncStory.syncStory(story, player);
                             });
@@ -61,7 +61,7 @@ public class ModCommands {
                 .requires(cs -> cs.hasPermission(2))
                 .executes(context -> {
                     ServerPlayerEntity player = context.getSource().getPlayerOrException();
-                    player.getCapability(PlayerProperties.PLAYER_STORY).ifPresent(story -> {
+                    player.getCapability(StoryTools.PLAYER_STORY).ifPresent(story -> {
                         story.reset();
                         PacketSyncStory.syncStory(story, player);
                     });
@@ -74,7 +74,7 @@ public class ModCommands {
                 .requires(cs -> cs.hasPermission(2))
                 .executes(context -> {
                     ServerPlayerEntity player = context.getSource().getPlayerOrException();
-                    Config.getStoryPages().forEach((s, text) -> player.sendMessage(new StringTextComponent("Chapter:" + s), Util.NIL_UUID));
+                    Config.getChapters().forEach((s, text) -> player.sendMessage(new StringTextComponent("Chapter:" + s), Util.NIL_UUID));
                     return 0;
                 });
     }
@@ -84,7 +84,7 @@ public class ModCommands {
                 .requires(cs -> cs.hasPermission(2))
                 .executes(context -> {
                     ServerPlayerEntity player = context.getSource().getPlayerOrException();
-                    player.getCapability(PlayerProperties.PLAYER_STORY).ifPresent(story -> {
+                    player.getCapability(StoryTools.PLAYER_STORY).ifPresent(story -> {
                         story.getDiscoveredPages().forEach(s -> player.sendMessage(new StringTextComponent("Chapter:" + s), Util.NIL_UUID));
                     });
                     return 0;
