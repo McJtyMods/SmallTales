@@ -94,7 +94,7 @@ public class GuiStory extends Screen {
 
     private List<String> getDiscoveredPages() {
         List<String> discoveredPages = Minecraft.getInstance().player.getCapability(StoryTools.PLAYER_STORY)
-                .map(PlayerStory::getDiscoveredPages)
+                .map(PlayerStory::getDiscovered)
                 .orElse(Collections.emptyList());
         return discoveredPages;
     }

@@ -49,7 +49,7 @@ public class ModCommands {
                             String page = context.getArgument("page", String.class);
                             ServerPlayerEntity player = context.getSource().getPlayerOrException();
                             player.getCapability(StoryTools.PLAYER_STORY).ifPresent(story -> {
-                                story.addDiscoveredPage(page);
+                                story.addDiscovered(page);
                                 PacketSyncStory.syncStory(story, player);
                             });
                             return 0;
@@ -85,7 +85,7 @@ public class ModCommands {
                 .executes(context -> {
                     ServerPlayerEntity player = context.getSource().getPlayerOrException();
                     player.getCapability(StoryTools.PLAYER_STORY).ifPresent(story -> {
-                        story.getDiscoveredPages().forEach(s -> player.sendMessage(new StringTextComponent("Chapter:" + s), Util.NIL_UUID));
+                        story.getDiscovered().forEach(s -> player.sendMessage(new StringTextComponent("Chapter:" + s), Util.NIL_UUID));
                     });
                     return 0;
                 });

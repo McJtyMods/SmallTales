@@ -31,7 +31,7 @@ public class StoryTools {
 
         player.getCapability(StoryTools.PLAYER_STORY).ifPresent(story -> {
             if (finalChapter != null) {
-                if (story.addDiscoveredPage(finalChapter)) {
+                if (story.addDiscovered(finalChapter)) {
                     if (finalMessage != null) {
                         player.sendMessage(messages.get(finalMessage), Util.NIL_UUID);
                     } else {
@@ -43,7 +43,9 @@ public class StoryTools {
                     }
                 }
             } else if (finalMessage != null) {
-                player.sendMessage(messages.get(finalMessage), Util.NIL_UUID);
+                if (story.addDiscovered(finalMessage)) {
+                    player.sendMessage(messages.get(finalMessage), Util.NIL_UUID);
+                }
             }
             PacketSyncStory.syncStory(story, player);
         });

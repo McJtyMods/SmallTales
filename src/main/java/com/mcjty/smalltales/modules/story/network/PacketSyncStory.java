@@ -39,7 +39,7 @@ public class PacketSyncStory {
         ctx.get().enqueueWork(() -> {
             McJtyLib.proxy.getClientPlayer().getCapability(StoryTools.PLAYER_STORY).ifPresent(story -> {
                 story.reset();
-                discoveredPages.forEach(story::addDiscoveredPage);
+                discoveredPages.forEach(story::addDiscovered);
             });
         });
         return true;
@@ -47,6 +47,6 @@ public class PacketSyncStory {
 
     public static void syncStory(PlayerStory story, PlayerEntity player) {
         Messages.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player),
-                new PacketSyncStory(story.getDiscoveredPages()));
+                new PacketSyncStory(story.getDiscovered()));
     }
 }

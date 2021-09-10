@@ -12,7 +12,7 @@ public class LootTables extends BaseLootTableProvider {
 
     @Override
     protected void addTables() {
-        addStandardTable(StoryModule.STORY_ANCHOR.get());
+        addStandardTable(StoryModule.STORY_ANCHOR_STONE.get());
     }
 
     @Override

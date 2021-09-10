@@ -11,40 +11,41 @@ import java.util.List;
 
 public class PlayerStory {
 
-    private List<String> discoveredPages = new ArrayList<>();
+    private List<String> discovered = new ArrayList<>();
 
     public PlayerStory() {
     }
 
     public void reset() {
-        discoveredPages.clear();
+        discovered.clear();
     }
 
-    public List<String> getDiscoveredPages() {
-        return discoveredPages;
+    public List<String> getDiscovered() {
+        return discovered;
     }
 
-    public boolean addDiscoveredPage(String id) {
-        if (!discoveredPages.contains(id)) {
-            discoveredPages.add(id);
+    // Return true if we discovered this newly
+    public boolean addDiscovered(String id) {
+        if (!discovered.contains(id)) {
+            discovered.add(id);
             return true;
         }
         return false;
     }
 
     public void copyFrom(PlayerStory source) {
-        discoveredPages = new ArrayList<>(source.discoveredPages);
+        discovered = new ArrayList<>(source.discovered);
     }
 
     public void saveNBTData(CompoundNBT compound) {
         ListNBT list = new ListNBT();
-        discoveredPages.forEach(s -> list.add(StringNBT.valueOf(s)));
+        discovered.forEach(s -> list.add(StringNBT.valueOf(s)));
         compound.put("discovered", list);
     }
 
     public void loadNBTData(CompoundNBT compound) {
         ListNBT discovered = compound.getList("discovered", Constants.NBT.TAG_STRING);
-        discoveredPages.clear();
-        discovered.forEach(nbt -> discoveredPages.add(nbt.getAsString()));
+        this.discovered.clear();
+        discovered.forEach(nbt -> this.discovered.add(nbt.getAsString()));
     }
 }

@@ -32,8 +32,8 @@ public class GuiConfigurator extends GuiItemScreen implements IKeyReceiver {
     public void init() {
         super.init();
 
-        chapterTextField = Widgets.textfield(10, 10, WIDTH-20, 20).event(this::update).addTextEnterEvent(this::updateAndExit);
-        messageTextField = Widgets.textfield(10, 32, WIDTH-20, 20).event(this::update).addTextEnterEvent(this::updateAndExit);
+        chapterTextField = Widgets.textfield(70, 10, WIDTH-80, 20).event(this::update).addTextEnterEvent(this::updateAndExit);
+        messageTextField = Widgets.textfield(70, 32, WIDTH-80, 20).event(this::update).addTextEnterEvent(this::updateAndExit);
 
         TileEntity be = Minecraft.getInstance().level.getBlockEntity(pos);
         if (be instanceof StoryAnchorTile) {
@@ -41,7 +41,9 @@ public class GuiConfigurator extends GuiItemScreen implements IKeyReceiver {
             ((StoryAnchorTile) be).getMessage().ifPresent(c -> messageTextField.text(c));
         }
 
-        Panel toplevel = positional().filledRectThickness(2).children(chapterTextField);
+        Panel toplevel = positional().filledRectThickness(2).children(
+                Widgets.label(10, 10, 55, 20, "Chapter:"), chapterTextField,
+                Widgets.label(10, 32, 55, 20, "Message:"), messageTextField);
 
         int x = (this.width - xSize) / 2;
         int y = (this.height - ySize) / 2;

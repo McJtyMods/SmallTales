@@ -20,9 +20,12 @@ public class StoryModule implements IModule {
     public static final RegistryObject<ChapterItem> STORY_CHAPTER = ITEMS.register("story_chapter", ChapterItem::new);
     public static final RegistryObject<ConfiguratorItem> CONFIGURATOR = ITEMS.register("configurator", ConfiguratorItem::new);
 
-    public static final RegistryObject<StoryAnchorBlock> STORY_ANCHOR = BLOCKS.register("story_anchor", StoryAnchorBlock::new);
-    public static final RegistryObject<BlockItem> STORY_ANCHOR_ITEM = ITEMS.register("story_anchor", () -> new BlockItem(STORY_ANCHOR.get(), createStandardProperties()));
-    public static final RegistryObject<TileEntityType<StoryAnchorTile>> STORY_ANCHOR_TILE = TILES.register("story_anchor", () -> TileEntityType.Builder.of(StoryAnchorTile::new, STORY_ANCHOR.get()).build(null));
+    public static final RegistryObject<StoryAnchorBlock> STORY_ANCHOR_STONE = BLOCKS.register("story_anchor_stone", StoryAnchorBlock::new);
+    public static final RegistryObject<BlockItem> STORY_ANCHOR_STONE_ITEM = ITEMS.register("story_anchor_stone", () -> new BlockItem(STORY_ANCHOR_STONE.get(), createStandardProperties()));
+    public static final RegistryObject<StoryAnchorBlock> STORY_ANCHOR_INVISIBLE = BLOCKS.register("story_anchor_invisible", StoryAnchorBlock::new);
+    public static final RegistryObject<BlockItem> STORY_ANCHOR_INVISIBLE_ITEM = ITEMS.register("story_anchor_invisible", () -> new BlockItem(STORY_ANCHOR_INVISIBLE.get(), createStandardProperties()));
+    public static final RegistryObject<TileEntityType<StoryAnchorTile>> STORY_ANCHOR_TILE = TILES.register("story_anchor", () ->
+            TileEntityType.Builder.of(StoryAnchorTile::new, STORY_ANCHOR_STONE.get(), STORY_ANCHOR_INVISIBLE.get()).build(null));
 
     @Override
     public void init(FMLCommonSetupEvent event) {
