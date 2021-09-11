@@ -14,6 +14,7 @@ public class LootTables extends BaseLootTableProvider {
     protected void addTables() {
         addStandardTable(StoryModule.STORY_ANCHOR_STONE.get());
         addStandardTable(StoryModule.STORY_ANCHOR_INVISIBLE.get());
+        addStandardTable(StoryModule.STORY_ANCHOR_PLATE.get());
     }
 
     @Override

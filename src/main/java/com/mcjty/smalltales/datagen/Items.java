@@ -18,6 +18,7 @@ public class Items extends BaseItemModelProvider {
         itemGenerated(StoryModule.STORY_CHAPTER.get(), "item/story_chapter");
         itemGenerated(StoryModule.CONFIGURATOR.get(), "item/configurator");
         parentedBlock(StoryModule.STORY_ANCHOR_STONE.get(), "block/story_anchor_stone");
+        parentedBlock(StoryModule.STORY_ANCHOR_PLATE.get(), "block/story_anchor_plate");
         itemGenerated(StoryModule.STORY_ANCHOR_INVISIBLE_ITEM.get(), "item/anchor_invisible");
     }
 

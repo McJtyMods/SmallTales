@@ -1,6 +1,7 @@
 {
     "block.smalltales.story_anchor_stone": "Story Anchor",
     "block.smalltales.story_anchor_invisible": "Story Anchor",
+    "block.smalltales.story_anchor_plate": "Story Anchor",
     "item.smalltales.configurator": "Story Configurator",
     "item.smalltales.the_story": "The Story",
     "item.smalltales.story_chapter": "Chapter",
@@ -11,9 +12,10 @@
     "message.smalltales.configurator.header": "With this tool you can configure story anchors",
     "message.smalltales.story_anchor_stone.header": "A marker for a story point",
     "message.smalltales.story_anchor_invisible.header": "A marker for a story point",
+    "message.smalltales.story_anchor_plate.header": "A marker for a story point",
     "message.smalltales.the_story.header": "A notebook containing the story for the player to read",
     "message.smalltales.story_chapter.header": "A chapter in the story",
     "message.smalltales.story_chapter.chapter": "Chapter: ",
-    "message.smalltales.story_chapter.message": "MEssage: "
+    "message.smalltales.story_chapter.message": "Message: "
 }
 

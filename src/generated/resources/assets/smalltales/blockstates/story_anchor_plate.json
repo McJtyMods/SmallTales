@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "smalltales:block/story_anchor_plate"
+    },
+    "facing=south": {
+      "model": "smalltales:block/story_anchor_plate",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "smalltales:block/story_anchor_plate",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "smalltales:block/story_anchor_plate",
+      "y": 90
+    }
+  }
+}
