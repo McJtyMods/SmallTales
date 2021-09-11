@@ -3,7 +3,7 @@
 [story]
 	#A list of chapters
 	chapters = [
-	"main={#}Main page{}{p}{p}This is the main page. Let's see if we can have a lot of layout here. What about {-}old{}new lines and so on?{p}{p}This is a {_}{4}red{} text!",
+	"main={#}The story{}{p}{p}You wake up from a deep sleep and discover this {4}{#}new mod{}{p}{p}After running around for a while you can see it is about telling a story!",
 	"discovered={#}Discovered{}{p}{p}Here is what we discovered so far. We {_}discovered{} if we {/}discovered{} something"
 	]
 	messages = [

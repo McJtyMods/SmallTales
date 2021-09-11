@@ -1,11 +1,13 @@
 package com.mcjty.smalltales;
 
+import com.mcjty.smalltales.client.RenderWorldLastEventHandler;
 import com.mcjty.smalltales.modules.story.StoryModule;
 import com.mcjty.smalltales.setup.Config;
 import com.mcjty.smalltales.setup.ModSetup;
 import com.mcjty.smalltales.setup.Registration;
 import mcjty.lib.modules.Modules;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -31,6 +33,7 @@ public class SmallTales {
 
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
             bus.addListener(modules::initClient);
+            MinecraftForge.EVENT_BUS.addListener(RenderWorldLastEventHandler::tick);
         });
     }
 

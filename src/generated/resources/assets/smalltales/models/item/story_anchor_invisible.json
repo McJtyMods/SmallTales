@@ -1,3 +1,6 @@
 {
-  "parent": "smalltales:block/story_anchor_invisible"
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "smalltales:item/anchor_invisible"
+  }
 }

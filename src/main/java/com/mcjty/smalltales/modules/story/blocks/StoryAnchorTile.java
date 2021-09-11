@@ -1,5 +1,6 @@
 package com.mcjty.smalltales.modules.story.blocks;
 
+import com.mcjty.smalltales.client.RenderWorldLastEventHandler;
 import com.mcjty.smalltales.modules.story.StoryModule;
 import com.mcjty.smalltales.playerdata.StoryTools;
 import mcjty.lib.tileentity.GenericTileEntity;
@@ -32,6 +33,8 @@ public class StoryAnchorTile extends GenericTileEntity implements ITickableTileE
                     }
                 });
             }
+        } else {
+            RenderWorldLastEventHandler.registerAnchor(getBlockPos());
         }
     }
 
