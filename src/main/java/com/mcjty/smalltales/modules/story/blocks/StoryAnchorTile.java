@@ -4,10 +4,14 @@ import com.mcjty.smalltales.client.RenderWorldLastEventHandler;
 import com.mcjty.smalltales.modules.story.StoryModule;
 import com.mcjty.smalltales.playerdata.StoryTools;
 import mcjty.lib.tileentity.GenericTileEntity;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockRayTraceResult;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +20,9 @@ public class StoryAnchorTile extends GenericTileEntity implements ITickableTileE
 
     private String chapter = null;
     private String message = null;
+    private int range = 3;
+    private boolean onActivate = false;
+
     private AxisAlignedBB box = null;
 
     public StoryAnchorTile() {
@@ -25,24 +32,56 @@ public class StoryAnchorTile extends GenericTileEntity implements ITickableTileE
     @Override
     public void tick() {
         if (!level.isClientSide()) {
-            if (chapter != null || message != null) {
-                List<PlayerEntity> players = level.getEntitiesOfClass(PlayerEntity.class, getBox());
-                players.forEach(player -> {
-                    if (!player.isCreative()) {
-                        StoryTools.acquireKnowledge(player, chapter, message, false);
-                    }
-                });
+            if (!onActivate) {
+                if (chapter != null || message != null) {
+                    List<PlayerEntity> players = level.getEntitiesOfClass(PlayerEntity.class, getBox());
+                    players.forEach(player -> {
+                        if (!player.isCreative()) {
+                            StoryTools.acquireKnowledge(player, chapter, message, false);
+                        }
+                    });
+                }
             }
         } else {
             RenderWorldLastEventHandler.registerAnchor(getBlockPos());
         }
     }
 
+    @Override
+    public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+        if (onActivate) {
+            if (!player.level.isClientSide()) {
+                StoryTools.acquireKnowledge(player, chapter, message, true);
+                return ActionResultType.SUCCESS;
+            }
+        }
+        return super.onBlockActivated(state, player, hand, result);
+    }
+
     private AxisAlignedBB getBox() {
         if (box == null) {
-            box = new AxisAlignedBB(getBlockPos()).inflate(3.0);
+            box = new AxisAlignedBB(getBlockPos()).inflate(range);
         }
         return box;
+    }
+
+    public int getRange() {
+        return range;
+    }
+
+    public void setRange(int range) {
+        this.range = range;
+        box = null;
+        markDirtyClient();
+    }
+
+    public boolean isOnActivate() {
+        return onActivate;
+    }
+
+    public void setOnActivate(boolean onActivate) {
+        this.onActivate = onActivate;
+        markDirtyClient();
     }
 
     public Optional<String> getChapter() {
@@ -82,6 +121,8 @@ public class StoryAnchorTile extends GenericTileEntity implements ITickableTileE
         } else {
             message = null;
         }
+        onActivate = info.getBoolean("onactivate");
+        range = info.getInt("range");
         super.readInfo(tagCompound);
     }
 
@@ -94,6 +135,8 @@ public class StoryAnchorTile extends GenericTileEntity implements ITickableTileE
         if (message != null) {
             info.putString("message", message);
         }
+        info.putBoolean("onactivate", onActivate);
+        info.putInt("range", range);
         super.writeInfo(tagCompound);
     }
 }

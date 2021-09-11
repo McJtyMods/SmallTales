@@ -5,14 +5,12 @@ import com.mcjty.smalltales.modules.story.network.PacketUpdateKnowledge;
 import com.mcjty.smalltales.setup.Messages;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import mcjty.lib.gui.*;
-import mcjty.lib.gui.widgets.Panel;
-import mcjty.lib.gui.widgets.TextField;
-import mcjty.lib.gui.widgets.Widgets;
+import mcjty.lib.gui.widgets.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 
-import static mcjty.lib.gui.widgets.Widgets.positional;
+import static mcjty.lib.gui.widgets.Widgets.*;
 
 public class GuiConfigurator extends GuiItemScreen implements IKeyReceiver {
 
@@ -22,6 +20,9 @@ public class GuiConfigurator extends GuiItemScreen implements IKeyReceiver {
     private final BlockPos pos;
     private TextField chapterTextField;
     private TextField messageTextField;
+    private Slider rangeSlider;
+    private ScrollableLabel range;
+    private ToggleButton onActivateButton;
 
     public GuiConfigurator(BlockPos pos) {
         super(Messages.INSTANCE, WIDTH, HEIGHT, ManualEntry.EMPTY);
@@ -32,18 +33,27 @@ public class GuiConfigurator extends GuiItemScreen implements IKeyReceiver {
     public void init() {
         super.init();
 
-        chapterTextField = Widgets.textfield(70, 10, WIDTH-80, 20).event(this::update).addTextEnterEvent(this::updateAndExit);
-        messageTextField = Widgets.textfield(70, 32, WIDTH-80, 20).event(this::update).addTextEnterEvent(this::updateAndExit);
+        chapterTextField = textfield(70, 10, WIDTH-80, 20).event(this::update).addTextEnterEvent(this::updateAndExit);
+        messageTextField = textfield(70, 32, WIDTH-80, 20).event(this::update).addTextEnterEvent(this::updateAndExit);
+        range = new ScrollableLabel().hint(70, 54, 30, 20).event(i -> update("")).realMinimum(1).realMaximum(50).name("range");
+        rangeSlider = slider(105, 54, WIDTH-80-35, 20).horizontal().scrollableName("range");
+        onActivateButton = new ToggleButton().hint(70, 76, WIDTH-80, 20).event(() -> update("")).checkMarker(true);
 
         TileEntity be = Minecraft.getInstance().level.getBlockEntity(pos);
         if (be instanceof StoryAnchorTile) {
-            ((StoryAnchorTile) be).getChapter().ifPresent(c -> chapterTextField.text(c));
-            ((StoryAnchorTile) be).getMessage().ifPresent(c -> messageTextField.text(c));
+            StoryAnchorTile tile = (StoryAnchorTile) be;
+            tile.getChapter().ifPresent(c -> chapterTextField.text(c));
+            tile.getMessage().ifPresent(c -> messageTextField.text(c));
+            range.setGenericValue(tile.getRange());
+            onActivateButton.pressed(tile.isOnActivate());
         }
 
         Panel toplevel = positional().filledRectThickness(2).children(
-                Widgets.label(10, 10, 55, 20, "Chapter:"), chapterTextField,
-                Widgets.label(10, 32, 55, 20, "Message:"), messageTextField);
+                label(10, 10, 55, 20, "Chapter:"), chapterTextField,
+                label(10, 32, 55, 20, "Message:"), messageTextField,
+                label(10, 54, 55, 20, "Range:"), range, rangeSlider,
+                label(10, 76, 55, 20, "Activate:"), onActivateButton
+                );
 
         int x = (this.width - xSize) / 2;
         int y = (this.height - ySize) / 2;
@@ -59,7 +69,12 @@ public class GuiConfigurator extends GuiItemScreen implements IKeyReceiver {
     }
 
     private void update(String _) {
-        Messages.INSTANCE.sendToServer(new PacketUpdateKnowledge(pos, chapterTextField.getText(), messageTextField.getText()));
+        if (range == null || onActivateButton == null) {
+            return;
+        }
+        Messages.INSTANCE.sendToServer(new PacketUpdateKnowledge(pos,
+                chapterTextField.getText(), messageTextField.getText(),
+                range.getRealValue(), onActivateButton.isPressed()));
     }
 
     @Override
