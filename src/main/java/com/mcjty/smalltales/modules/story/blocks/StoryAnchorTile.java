@@ -2,6 +2,7 @@ package com.mcjty.smalltales.modules.story.blocks;
 
 import com.mcjty.smalltales.client.RenderWorldLastEventHandler;
 import com.mcjty.smalltales.modules.story.StoryModule;
+import com.mcjty.smalltales.modules.story.items.ConfiguratorItem;
 import com.mcjty.smalltales.playerdata.StoryTools;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.block.BlockState;
@@ -50,9 +51,11 @@ public class StoryAnchorTile extends GenericTileEntity implements ITickableTileE
     @Override
     public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
         if (onActivate) {
-            if (!player.level.isClientSide()) {
-                StoryTools.acquireKnowledge(player, chapter, message, true);
-                return ActionResultType.SUCCESS;
+            if (!(player.getMainHandItem().getItem() instanceof ConfiguratorItem)) {
+                if (!player.level.isClientSide()) {
+                    StoryTools.acquireKnowledge(player, chapter, message, true);
+                    return ActionResultType.SUCCESS;
+                }
             }
         }
         return super.onBlockActivated(state, player, hand, result);
