@@ -1,5 +1,6 @@
 package com.mcjty.smalltales.modules.story;
 
+import com.mcjty.smalltales.SmallTales;
 import com.mcjty.smalltales.modules.story.blocks.StoryAnchorBlock;
 import com.mcjty.smalltales.modules.story.blocks.StoryAnchorTile;
 import com.mcjty.smalltales.modules.story.items.ChapterItem;
@@ -8,6 +9,8 @@ import com.mcjty.smalltales.modules.story.items.TheStoryItem;
 import mcjty.lib.modules.IModule;
 import net.minecraft.item.BlockItem;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -28,6 +31,9 @@ public class StoryModule implements IModule {
     public static final RegistryObject<BlockItem> STORY_ANCHOR_INVISIBLE_ITEM = ITEMS.register("story_anchor_invisible", () -> new BlockItem(STORY_ANCHOR_INVISIBLE.get(), createStandardProperties()));
     public static final RegistryObject<TileEntityType<StoryAnchorTile>> STORY_ANCHOR_TILE = TILES.register("story_anchor", () ->
             TileEntityType.Builder.of(StoryAnchorTile::new, STORY_ANCHOR_STONE.get(), STORY_ANCHOR_INVISIBLE.get(), STORY_ANCHOR_PLATE.get()).build(null));
+
+    public static final RegistryObject<SoundEvent> WRITING_SOUND = SOUNDS.register("writing", () -> new SoundEvent(new ResourceLocation(SmallTales.MODID, "writing")));
+    public static final RegistryObject<SoundEvent> MESSAGE_SOUND = SOUNDS.register("sonar", () -> new SoundEvent(new ResourceLocation(SmallTales.MODID, "sonar")));
 
     @Override
     public void init(FMLCommonSetupEvent event) {

@@ -1,0 +1,4 @@
+{
+    "writing" : {"category": "player", "sounds": ["smalltales:writing"]},
+    "sonar" : {"category": "player", "sounds": ["smalltales:sonar"]}
+}

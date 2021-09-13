@@ -11,8 +11,10 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.text.StringTextComponent;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +23,7 @@ public class StoryAnchorTile extends GenericTileEntity implements ITickableTileE
 
     private String chapter = null;
     private String message = null;
-    private int range = 3;
+    private int range = 4;
     private boolean onActivate = false;
 
     private AxisAlignedBB box = null;
@@ -50,13 +52,15 @@ public class StoryAnchorTile extends GenericTileEntity implements ITickableTileE
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
-        if (onActivate) {
-            if (!(player.getMainHandItem().getItem() instanceof ConfiguratorItem)) {
-                if (!player.level.isClientSide()) {
+        if (!(player.getMainHandItem().getItem() instanceof ConfiguratorItem)) {
+            if (!player.level.isClientSide()) {
+                if (onActivate) {
                     StoryTools.acquireKnowledge(player, chapter, message, true);
-                    return ActionResultType.SUCCESS;
+                } else {
+                    player.sendMessage(new StringTextComponent("Nothing happens!"), Util.NIL_UUID);
                 }
             }
+            return ActionResultType.SUCCESS;
         }
         return super.onBlockActivated(state, player, hand, result);
     }

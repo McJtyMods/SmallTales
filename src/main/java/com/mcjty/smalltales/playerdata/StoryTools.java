@@ -1,13 +1,16 @@
 package com.mcjty.smalltales.playerdata;
 
+import com.mcjty.smalltales.SmallTales;
 import com.mcjty.smalltales.modules.story.network.PacketSyncStory;
 import com.mcjty.smalltales.setup.Config;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Util;
+import net.minecraft.util.*;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Map;
 
@@ -37,6 +40,7 @@ public class StoryTools {
                     } else {
                         player.sendMessage(new StringTextComponent("You discover " + finalChapter + "!"), Util.NIL_UUID);
                     }
+                    playSound(player, Config.CHAPTER_SOUND);
                 } else {
                     if (reportAlreadyKnown) {
                         player.sendMessage(new StringTextComponent("You already know " + finalChapter + "!"), Util.NIL_UUID);
@@ -45,9 +49,17 @@ public class StoryTools {
             } else if (finalMessage != null) {
                 if (story.addDiscovered(finalMessage)) {
                     player.sendMessage(messages.get(finalMessage), Util.NIL_UUID);
+                    playSound(player, Config.MESSAGE_SOUND);
                 }
             }
             PacketSyncStory.syncStory(story, player);
         });
+    }
+
+    private static void playSound(PlayerEntity player, ForgeConfigSpec.ConfigValue<String> soundConfig) {
+        if (!soundConfig.get().isEmpty()) {
+            SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation(soundConfig.get()));
+            player.level.playSound(null, player, sound, SoundCategory.PLAYERS, 1.0f, 1.0f);
+        }
     }
 }

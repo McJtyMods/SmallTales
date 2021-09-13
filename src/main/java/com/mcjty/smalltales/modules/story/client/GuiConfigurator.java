@@ -93,9 +93,7 @@ public class GuiConfigurator extends GuiItemScreen implements IKeyReceiver {
         if (window == null) {
             return false;
         }
-        boolean rc = super.mouseClicked(x, y, button);
-        window.mouseClicked(x, y, button);
-        return rc;
+        return super.mouseClicked(x, y, button);
     }
 
     @Override
@@ -104,9 +102,7 @@ public class GuiConfigurator extends GuiItemScreen implements IKeyReceiver {
         if (window == null) {
             return false;
         }
-        boolean rc = super.mouseReleased(mouseX, mouseY, button);
-        window.mouseReleased(mouseX, mouseY, button);
-        return rc;
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
@@ -148,14 +144,14 @@ public class GuiConfigurator extends GuiItemScreen implements IKeyReceiver {
     @Override
     public boolean mouseClickedFromEvent(double x, double y, int button) {
         WindowManager manager = getWindow().getWindowManager();
-        manager.mouseClicked(x, y, button);
+//        manager.mouseClicked(x, y, button);
         return true;
     }
 
     @Override
     public boolean mouseReleasedFromEvent(double x, double y, int button) {
         WindowManager manager = getWindow().getWindowManager();
-        manager.mouseReleased(x, y, button);
+//        manager.mouseReleased(x, y, button);
         return true;
     }
 
