@@ -5,7 +5,7 @@
 	chapters = [
 	"main={#}The story{}{p}{p}You wake up from a deep sleep and discover this {4}{#}new mod{}{p}{p}After running around for a while you can see it is about telling a story!",
 	"tree={#}Tree{}{p}{p}This {/}dark tree{} has a trunk and leaves. That's extremely suspicious. Almost too normal",
-	"cellar={#}Cellar{}{p}{p}This dark cellar holds many secrets!{p}{p}I wish it was {4}wine{}!",
+	"cellar={#}Cellar{}{p}{p}This dark cellar holds many secrets!{p}{i:minecraft:diamond,minecraft:emerald,minecraft:iron_ingot}{p}I wish it was {4}wine{}!",
 	"k1=This is k1",
 	"k2=This is k2",
 	"k3=This is k3",

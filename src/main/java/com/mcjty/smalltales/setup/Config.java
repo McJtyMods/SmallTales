@@ -1,9 +1,9 @@
 package com.mcjty.smalltales.setup;
 
 
-import com.mcjty.smalltales.modules.story.StoryTextParser;
+import com.mcjty.smalltales.modules.story.parser.IStoryElement;
+import com.mcjty.smalltales.modules.story.parser.StoryTextParser;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.common.ForgeConfig;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.Builder;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -21,7 +21,7 @@ public class Config {
     public static ForgeConfigSpec CLIENT_CONFIG;
 
     private static ForgeConfigSpec.ConfigValue<List<? extends String>> CHAPTERS;
-    private static Map<String, ITextComponent> chapters = null;
+    private static Map<String, List<IStoryElement>> chapters = null;
 
     private static ForgeConfigSpec.ConfigValue<List<? extends String>> MESSAGES;
     private static Map<String, ITextComponent> messages = null;
@@ -68,7 +68,7 @@ public class Config {
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, SERVER_CONFIG);
     }
 
-    public static Map<String, ITextComponent> getChapters() {
+    public static Map<String, List<IStoryElement>> getChapters() {
         if (chapters == null) {
             chapters = new HashMap<>();
             for (String s : CHAPTERS.get()) {
@@ -84,7 +84,7 @@ public class Config {
             messages = new HashMap<>();
             for (String s : MESSAGES.get()) {
                 String[] split = StringUtils.split(s, "=", 2);
-                messages.put(split[0], StoryTextParser.parse(split[1]));
+                messages.put(split[0], StoryTextParser.parseComponent(split[1]));
             }
         }
         return messages;

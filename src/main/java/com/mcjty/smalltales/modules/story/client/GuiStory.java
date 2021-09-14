@@ -2,20 +2,24 @@ package com.mcjty.smalltales.modules.story.client;
 
 import com.mcjty.smalltales.SmallTales;
 import com.mcjty.smalltales.modules.story.network.PackedMarkRead;
+import com.mcjty.smalltales.modules.story.parser.ClientWrapper;
+import com.mcjty.smalltales.modules.story.parser.Cursor;
+import com.mcjty.smalltales.modules.story.parser.IStoryElement;
+import com.mcjty.smalltales.modules.story.parser.TextStoryElement;
 import com.mcjty.smalltales.playerdata.PlayerStory;
 import com.mcjty.smalltales.playerdata.StoryTools;
 import com.mcjty.smalltales.setup.Config;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.java.games.input.Keyboard;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.Collections;
 import java.util.List;
@@ -69,7 +73,7 @@ public class GuiStory extends Screen {
             }
         }
         if (currentPage >= discoveredPages.size()) {
-            currentPage = -contentsPages;       // Go to start of table of contents
+            goHome();
         }
     }
 
@@ -83,6 +87,12 @@ public class GuiStory extends Screen {
         int relX = (this.width - WIDTH) / 2;
         int relY = (this.height - HEIGHT) / 2;
         return (mouseX >= relX+25 && mouseX <= relX + 25 + 16) && (mouseY >= relY-15 && mouseY <= relY - 15 + 14);
+    }
+
+    private boolean isHitTOC(double mouseX, double mouseY) {
+        int relX = (this.width - WIDTH) / 2;
+        int relY = (this.height - HEIGHT) / 2;
+        return (mouseX >= relX+WIDTH-25 && mouseX <= relX + WIDTH-25 + 16) && (mouseY >= relY-15 && mouseY <= relY - 15 + 14);
     }
 
     private int getTocIndex(double mouseX, double mouseY) {
@@ -110,8 +120,6 @@ public class GuiStory extends Screen {
         int left = relX + 12;
         int top = relY + 12;
 
-        final int[] yy = {top};
-
         if (!discoveredPages.isEmpty()) {
             if (currentPage >= discoveredPages.size()) {
                 currentPage = discoveredPages.size() - 1;
@@ -126,21 +134,26 @@ public class GuiStory extends Screen {
                 this.blit(matrixStack, relX+25, relY-15, u, 212, 21, 14);
             }
 
-            ITextComponent page = getPageComponent(mouseX, mouseY);
+            int u = isHitTOC(mouseX, mouseY) ? 25 : 2;
+            this.blit(matrixStack, relX + WIDTH - 25, relY - 15, u, 238, 21, 14);
+
+            ClientWrapper client = new ClientWrapper(this.font, matrixStack, this.itemRenderer);
+            List<IStoryElement> page = getPageComponent(mouseX, mouseY);
             if (page != null) {
-                List<IReorderingProcessor> split = this.font.split(page, WIDTH - 30);
+                Cursor cursor = new Cursor(left, top);
+                List<IStoryElement> split = ClientWrapper.split(page, client, WIDTH - 30);
                 split.forEach(line -> {
-                    this.font.draw(matrixStack, line, left, yy[0], 0x000000);
-                    yy[0] += 10;
+                    line.draw(client, cursor);
+                    cursor.nextLine(left, line.getHeight());
                 });
                 markRead();
             } else {
-                this.font.draw(matrixStack, new StringTextComponent("Invalid chapter!").withStyle(TextFormatting.RED), left, yy[0], 0x000000);
+                this.font.draw(matrixStack, new StringTextComponent("Invalid chapter!").withStyle(TextFormatting.RED), left, top, 0x000000);
             }
         }
     }
 
-    private ITextComponent getPageComponent(double mouseX, double mouseY) {
+    private List<IStoryElement> getPageComponent(double mouseX, double mouseY) {
         if (currentPage < 0) {
             int cp = contentsPages + currentPage + 1;
             IFormattableTextComponent component = new StringTextComponent(TextFormatting.BOLD + "Contents (" + cp + "/" + contentsPages + ")\n" + TextFormatting.RESET);
@@ -160,7 +173,7 @@ public class GuiStory extends Screen {
                     break;
                 }
             }
-            return component;
+            return Collections.singletonList(new TextStoryElement(component));
         } else {
             return Config.getChapters().get(discoveredPages.get(currentPage));
         }
@@ -181,13 +194,11 @@ public class GuiStory extends Screen {
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         if (isHitLeft(mouseX, mouseY)) {
-            if (currentPage > -contentsPages) {
-                currentPage--;
-            }
+            goLeft();
         } else if (isHitRight(mouseX, mouseY)) {
-            if (currentPage < discoveredPages.size()-1) {
-                currentPage++;
-            }
+            goRight();
+        } else if (isHitTOC(mouseX, mouseY)) {
+            goHome();
         } else {
             int index = getTocIndex(mouseX, mouseY);
             if (index != -1) {
@@ -196,6 +207,40 @@ public class GuiStory extends Screen {
             }
         }
         return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    private void goHome() {
+        currentPage = -contentsPages;
+    }
+
+    private void goRight() {
+        if (currentPage < discoveredPages.size() - 1) {
+            currentPage++;
+        }
+    }
+
+    private void goLeft() {
+        if (currentPage > -contentsPages) {
+            currentPage--;
+        }
+    }
+
+    @Override
+    public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers) {
+        boolean rc = super.keyPressed(pKeyCode, pScanCode, pModifiers);
+        if (!rc) {
+            if (pKeyCode == GLFW.GLFW_KEY_LEFT) {
+                goLeft();
+                return true;
+            } else if (pKeyCode == GLFW.GLFW_KEY_RIGHT) {
+                goRight();
+                return true;
+            } else if (pKeyCode == GLFW.GLFW_KEY_HOME) {
+                goHome();
+                return true;
+            }
+        }
+        return rc;
     }
 
     public static void open() {

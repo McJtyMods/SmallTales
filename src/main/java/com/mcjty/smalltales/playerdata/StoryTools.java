@@ -2,6 +2,7 @@ package com.mcjty.smalltales.playerdata;
 
 import com.mcjty.smalltales.SmallTales;
 import com.mcjty.smalltales.modules.story.network.PacketSyncStory;
+import com.mcjty.smalltales.modules.story.parser.IStoryElement;
 import com.mcjty.smalltales.setup.Config;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.*;
@@ -12,6 +13,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.List;
 import java.util.Map;
 
 public class StoryTools {
@@ -20,7 +22,7 @@ public class StoryTools {
     public static Capability<PlayerStory> PLAYER_STORY;
 
     public static void acquireKnowledge(PlayerEntity player, String chapter, String message, boolean reportAlreadyKnown) {
-        Map<String, ITextComponent> chapters = Config.getChapters();
+        Map<String, List<IStoryElement>> chapters = Config.getChapters();
         Map<String, ITextComponent> messages = Config.getMessages();
         if (chapter != null && !chapters.containsKey(chapter)) {
             chapter = null;
