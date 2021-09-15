@@ -14,7 +14,7 @@ import java.util.*;
 
 public class StoryTextParser {
 
-    private static final Map<String, String> MAPPING;
+    public static final Map<String, String> MAPPING;
 
     static {
         MAPPING = new HashMap<>();
@@ -43,6 +43,7 @@ public class StoryTextParser {
         MAPPING.put("{14}", TextFormatting.YELLOW.toString());
         MAPPING.put("{15}", TextFormatting.WHITE.toString());
     }
+
 
     public static ITextComponent parseComponent(String text) {
         for (Map.Entry<String, String> entry : MAPPING.entrySet()) {

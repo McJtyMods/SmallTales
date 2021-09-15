@@ -2,6 +2,7 @@ package com.mcjty.smalltales.setup;
 
 
 import com.mcjty.smalltales.modules.story.parser.IStoryElement;
+import com.mcjty.smalltales.modules.story.parser.ParsedStory;
 import com.mcjty.smalltales.modules.story.parser.StoryTextParser;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -73,7 +74,8 @@ public class Config {
             chapters = new HashMap<>();
             for (String s : CHAPTERS.get()) {
                 String[] split = StringUtils.split(s, "=", 2);
-                chapters.put(split[0], StoryTextParser.parse(split[1]));
+                chapters.put(split[0], ParsedStory.parse(split[1]).getElements());
+//                chapters.put(split[0], StoryTextParser.parse(split[1]));
             }
         }
         return chapters;
