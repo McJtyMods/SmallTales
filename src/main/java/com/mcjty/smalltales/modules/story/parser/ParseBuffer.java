@@ -16,6 +16,10 @@ public class ParseBuffer {
         return text.charAt(cursor);
     }
 
+    public String peek(int amount) {
+        return text.substring(cursor, cursor+amount);
+    }
+
     public int remaining() {
         return text.length() - cursor;
     }
@@ -38,6 +42,15 @@ public class ParseBuffer {
             cursor++;
         }
         return text.substring(start, cursor);
+    }
+
+    public boolean skip(char c) {
+        if (peek() == c) {
+            cursor++;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public String skip(int amount) {

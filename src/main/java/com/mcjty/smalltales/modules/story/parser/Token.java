@@ -4,26 +4,26 @@ import javax.annotation.Nonnull;
 
 public class Token {
 
-    public static final Token TOKEN_END = new Token(Type.END, "");
+    public static final Token TOKEN_END = new Token(TokenType.END, "");
+    public static final Token TOKEN_SPACE = new Token(TokenType.SPACE, " ");
 
-    enum Type {
-        COMMAND,
-        WORD,
-        CHARACTER,
-        SPACE,
-        ERROR,
-        END
-    }
-
-    private final Type type;
+    private final TokenType type;
     private final String text;
+    private final TokenCommand command;
 
-    public Token(Type type, String text) {
+    public Token(TokenType type, String text) {
         this.type = type;
         this.text = text;
+        this.command = TokenCommand.CMD_NONE;
     }
 
-    public Type getType() {
+    public Token(TokenType type, String text, TokenCommand command) {
+        this.type = type;
+        this.text = text;
+        this.command = command;
+    }
+
+    public TokenType getType() {
         return type;
     }
 
@@ -31,20 +31,50 @@ public class Token {
         return text;
     }
 
+    public TokenCommand getCommand() {
+        return command;
+    }
+
+    public static Token word(String word) {
+        return new Token(TokenType.WORD, word);
+    }
+
+    public static Token character(String c) {
+        return new Token(TokenType.CHARACTER, c);
+    }
+
+    public static Token command(String cmd, TokenCommand command) {
+        return new Token(TokenType.COMMAND, cmd, command);
+    }
+
     @Nonnull
     public static Token fetch(ParseBuffer buffer) {
-        Type type = detectType(buffer);
+        TokenType type = detectType(buffer);
         switch (type) {
-            case COMMAND:
+            case COMMAND: {
                 String command = buffer.skipUntil('}');
                 if (command == null) {
-                    return new Token(Type.ERROR, "Missing '}'");
+                    return new Token(TokenType.ERROR, "Missing '}'");
                 } else {
-                    return new Token(type, command);
+                    return new Token(type, command, TokenCommand.byPrefix(command));
                 }
-            case WORD:
+            }
+            case ITEM: {
+                buffer.skipUntil(':');
+                String modid = buffer.skipWhile(Character::isJavaIdentifierPart);
+                if (!buffer.skip(':')) {
+                    return new Token(TokenType.ERROR, "Missing ':'");
+                }
+                String name = buffer.skipWhile(Character::isJavaIdentifierPart);
+                if (!buffer.skip('}')) {
+                    return new Token(TokenType.ERROR, "Missing '}'");
+                }
+                return new Token(type, modid + ":" + name);
+            }
+            case WORD: {
                 String word = buffer.skipWhile(Token::isWordChar);
                 return new Token(type, word);
+            }
             case CHARACTER:
                 if (buffer.peek() == '\\') {
                     if (buffer.remaining() <= 1) {
@@ -58,7 +88,7 @@ public class Token {
                 }
             case SPACE:
                 buffer.skipWhile(Character::isWhitespace);
-                return new Token(type, " ");
+                return TOKEN_SPACE;
             case ERROR:
                 return new Token(type, "Unknown error");
             case END:
@@ -67,21 +97,24 @@ public class Token {
         return TOKEN_END;
     }
 
-    public static Type detectType(ParseBuffer buffer) {
+    public static TokenType detectType(ParseBuffer buffer) {
         if (buffer.remaining() <= 0) {
-            return Type.END;
+            return TokenType.END;
         }
         char first = buffer.peek();
         if (first == '{') {
-            return Type.COMMAND;
+            if ("{i:".equals(buffer.peek(3))) {
+                return TokenType.ITEM;
+            }
+            return TokenType.COMMAND;
         }
         if (Character.isWhitespace(first)) {
-            return Type.SPACE;
+            return TokenType.SPACE;
         }
         if (isWordChar(first)) {
-            return Type.WORD;
+            return TokenType.WORD;
         }
-        return Type.CHARACTER;
+        return TokenType.CHARACTER;
     }
 
     private static boolean isWordChar(char first) {

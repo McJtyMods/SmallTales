@@ -1,26 +1,28 @@
 package com.mcjty.smalltales.modules.story.client;
 
+import com.google.common.collect.Lists;
 import com.mcjty.smalltales.SmallTales;
 import com.mcjty.smalltales.modules.story.network.PackedMarkRead;
-import com.mcjty.smalltales.modules.story.parser.*;
+import com.mcjty.smalltales.modules.story.parser.StoryRenderer;
+import com.mcjty.smalltales.modules.story.parser.Token;
+import com.mcjty.smalltales.modules.story.parser.TokenCommand;
 import com.mcjty.smalltales.playerdata.PlayerStory;
 import com.mcjty.smalltales.playerdata.StoryTools;
 import com.mcjty.smalltales.setup.Config;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.java.games.input.Keyboard;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import static com.mcjty.smalltales.modules.story.parser.Token.*;
 
 public class GuiStory extends Screen {
 
@@ -58,11 +60,11 @@ public class GuiStory extends Screen {
         readPages = minecraft.player.getCapability(StoryTools.PLAYER_STORY)
                 .map(PlayerStory::getRead)
                 .orElse(Collections.emptySet());
-        contentsPages = ((discoveredPages.size()-1) / TOC_ENTRIES_PER_PAGE) + 1;
+        contentsPages = ((discoveredPages.size() - 1) / TOC_ENTRIES_PER_PAGE) + 1;
     }
 
     private void findUnreadPage() {
-        for (int i = 0 ; i < discoveredPages.size() ; i++) {
+        for (int i = 0; i < discoveredPages.size(); i++) {
             String page = discoveredPages.get(i);
             if (!readPages.contains(page)) {
                 currentPage = i;
@@ -77,25 +79,25 @@ public class GuiStory extends Screen {
     private boolean isHitLeft(double mouseX, double mouseY) {
         int relX = (this.width - WIDTH) / 2;
         int relY = (this.height - HEIGHT) / 2;
-        return (mouseX >= relX+5 && mouseX <= relX + 5 + 16) && (mouseY >= relY-17 && mouseY <= relY - 17 + 14);
+        return (mouseX >= relX + 5 && mouseX <= relX + 5 + 16) && (mouseY >= relY - 17 && mouseY <= relY - 17 + 14);
     }
 
     private boolean isHitRight(double mouseX, double mouseY) {
         int relX = (this.width - WIDTH) / 2;
         int relY = (this.height - HEIGHT) / 2;
-        return (mouseX >= relX+25 && mouseX <= relX + 25 + 16) && (mouseY >= relY-15 && mouseY <= relY - 15 + 14);
+        return (mouseX >= relX + 25 && mouseX <= relX + 25 + 16) && (mouseY >= relY - 15 && mouseY <= relY - 15 + 14);
     }
 
     private boolean isHitTOC(double mouseX, double mouseY) {
         int relX = (this.width - WIDTH) / 2;
         int relY = (this.height - HEIGHT) / 2;
-        return (mouseX >= relX+WIDTH-25 && mouseX <= relX + WIDTH-25 + 16) && (mouseY >= relY-15 && mouseY <= relY - 15 + 14);
+        return (mouseX >= relX + WIDTH - 25 && mouseX <= relX + WIDTH - 25 + 16) && (mouseY >= relY - 15 && mouseY <= relY - 15 + 14);
     }
 
     private int getTocIndex(double mouseX, double mouseY) {
         int relY = (this.height - HEIGHT) / 2;
-        if (mouseY > relY+32) {
-            int idx = (int) ((mouseY - (relY+32)) / 10);
+        if (mouseY > relY + 32) {
+            int idx = (int) ((mouseY - (relY + 32)) / 10);
             if (idx < TOC_ENTRIES_PER_PAGE) {
                 return idx;
             }
@@ -124,56 +126,58 @@ public class GuiStory extends Screen {
 
             if (currentPage > -contentsPages) {
                 int u = isHitLeft(mouseX, mouseY) ? 25 : 2;
-                this.blit(matrixStack, relX+5, relY-15, u, 225, 20, 14);
+                this.blit(matrixStack, relX + 5, relY - 15, u, 225, 20, 14);
             }
-            if (currentPage < discoveredPages.size()-1) {
+            if (currentPage < discoveredPages.size() - 1) {
                 int u = isHitRight(mouseX, mouseY) ? 25 : 2;
-                this.blit(matrixStack, relX+25, relY-15, u, 212, 21, 14);
+                this.blit(matrixStack, relX + 25, relY - 15, u, 212, 21, 14);
             }
 
             int u = isHitTOC(mouseX, mouseY) ? 25 : 2;
             this.blit(matrixStack, relX + WIDTH - 25, relY - 15, u, 238, 21, 14);
 
-            ClientWrapper client = new ClientWrapper(this.font, matrixStack, this.itemRenderer);
-            List<IStoryElement> page = getPageComponent(mouseX, mouseY, WIDTH-30);
-            if (page != null) {
-                Cursor cursor = new Cursor(left, top);
-                List<IStoryElement> split = ClientWrapper.split(page, client, WIDTH - 30);
-                split.forEach(line -> {
-                    line.draw(client, cursor);
-                    cursor.nextLine(left, line.getHeight());
-                });
-                markRead();
-            } else {
-                this.font.draw(matrixStack, new StringTextComponent("Invalid chapter!").withStyle(TextFormatting.RED), left, top, 0x000000);
-            }
+            List<Token> tokens = getPageTokens(mouseX, mouseY);
+            StoryRenderer renderer = new StoryRenderer(this.font, matrixStack, this.itemRenderer, left, top);
+
+            tokens.forEach(token -> renderer.render(token, WIDTH-30));
         }
     }
 
-    private List<IStoryElement> getPageComponent(double mouseX, double mouseY, int width) {
+    private List<Token> getPageTokens(double mouseX, double mouseY) {
         if (currentPage < 0) {
             int cp = contentsPages + currentPage + 1;
-            IFormattableTextComponent component = new StringTextComponent(TextFormatting.BOLD + "Contents (" + cp + "/" + contentsPages + ")\n" + TextFormatting.RESET);
+            List<Token> tokens = Lists.newArrayList(
+                    command("{b}", TokenCommand.CMD_BOLD),
+                    word("Contents"),
+                    TOKEN_SPACE,
+                    character("("),
+                    word(String.valueOf(cp)),
+                    character("/"),
+                    word(String.valueOf(contentsPages)),
+                    character(")"),
+                    command("{p}", TokenCommand.CMD_PARAGRAPH)
+            );
             int tocIndex = getTocIndex(mouseX, mouseY);
-            for (int i = 0 ; i < TOC_ENTRIES_PER_PAGE ; i++) {
-                int index = (cp-1) * TOC_ENTRIES_PER_PAGE + i;
+            for (int i = 0; i < TOC_ENTRIES_PER_PAGE; i++) {
+                int index = (cp - 1) * TOC_ENTRIES_PER_PAGE + i;
                 if (index < discoveredPages.size()) {
-                    String prefix = "";
+                    tokens.add(command("{p}", TokenCommand.CMD_PARAGRAPH));
+                    tokens.add(command("{p}", TokenCommand.CMD_RESET));
+                    tokens.add(word("    "));
                     if (!readPages.contains(discoveredPages.get(index))) {
-                        prefix = TextFormatting.GRAY.toString();
+                        tokens.add(command("{p}", TokenCommand.CMD_GRAY));
                     }
                     if (tocIndex == i) {
-                        prefix += TextFormatting.BOLD.toString();
+                        tokens.add(command("{p}", TokenCommand.CMD_BOLD));
                     }
-                    component.append(new StringTextComponent("\n    " + prefix + discoveredPages.get(index)));
+                    tokens.add(word(discoveredPages.get(index)));
                 } else {
                     break;
                 }
             }
-            return Collections.singletonList(new TextStoryElement(component));
+            return tokens;
         } else {
-            List<Token> tokens = Config.getChapters().get(discoveredPages.get(currentPage));
-
+            return Config.getChapters().get(discoveredPages.get(currentPage));
         }
     }
 
@@ -201,7 +205,7 @@ public class GuiStory extends Screen {
             int index = getTocIndex(mouseX, mouseY);
             if (index != -1) {
                 int cp = contentsPages + currentPage + 1;
-                currentPage = (cp-1) * TOC_ENTRIES_PER_PAGE + index;
+                currentPage = (cp - 1) * TOC_ENTRIES_PER_PAGE + index;
             }
         }
         return super.mouseReleased(mouseX, mouseY, button);
