@@ -4,6 +4,7 @@ package com.mcjty.smalltales.setup;
 import com.mcjty.smalltales.modules.story.parser.IStoryElement;
 import com.mcjty.smalltales.modules.story.parser.ParsedStory;
 import com.mcjty.smalltales.modules.story.parser.StoryTextParser;
+import com.mcjty.smalltales.modules.story.parser.Token;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.Builder;
@@ -22,7 +23,7 @@ public class Config {
     public static ForgeConfigSpec CLIENT_CONFIG;
 
     private static ForgeConfigSpec.ConfigValue<List<? extends String>> CHAPTERS;
-    private static Map<String, List<IStoryElement>> chapters = null;
+    private static Map<String, List<Token>> chapters = null;
 
     private static ForgeConfigSpec.ConfigValue<List<? extends String>> MESSAGES;
     private static Map<String, ITextComponent> messages = null;
@@ -69,12 +70,12 @@ public class Config {
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, SERVER_CONFIG);
     }
 
-    public static Map<String, List<IStoryElement>> getChapters() {
+    public static Map<String, List<Token>> getChapters() {
         if (chapters == null) {
             chapters = new HashMap<>();
             for (String s : CHAPTERS.get()) {
                 String[] split = StringUtils.split(s, "=", 2);
-                chapters.put(split[0], ParsedStory.parse(split[1]).getElements());
+                chapters.put(split[0], ParsedStory.tokenize(split[1]));
 //                chapters.put(split[0], StoryTextParser.parse(split[1]));
             }
         }

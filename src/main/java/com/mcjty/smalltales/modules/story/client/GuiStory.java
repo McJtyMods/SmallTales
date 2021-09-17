@@ -2,10 +2,7 @@ package com.mcjty.smalltales.modules.story.client;
 
 import com.mcjty.smalltales.SmallTales;
 import com.mcjty.smalltales.modules.story.network.PackedMarkRead;
-import com.mcjty.smalltales.modules.story.parser.ClientWrapper;
-import com.mcjty.smalltales.modules.story.parser.Cursor;
-import com.mcjty.smalltales.modules.story.parser.IStoryElement;
-import com.mcjty.smalltales.modules.story.parser.TextStoryElement;
+import com.mcjty.smalltales.modules.story.parser.*;
 import com.mcjty.smalltales.playerdata.PlayerStory;
 import com.mcjty.smalltales.playerdata.StoryTools;
 import com.mcjty.smalltales.setup.Config;
@@ -138,7 +135,7 @@ public class GuiStory extends Screen {
             this.blit(matrixStack, relX + WIDTH - 25, relY - 15, u, 238, 21, 14);
 
             ClientWrapper client = new ClientWrapper(this.font, matrixStack, this.itemRenderer);
-            List<IStoryElement> page = getPageComponent(mouseX, mouseY);
+            List<IStoryElement> page = getPageComponent(mouseX, mouseY, WIDTH-30);
             if (page != null) {
                 Cursor cursor = new Cursor(left, top);
                 List<IStoryElement> split = ClientWrapper.split(page, client, WIDTH - 30);
@@ -153,7 +150,7 @@ public class GuiStory extends Screen {
         }
     }
 
-    private List<IStoryElement> getPageComponent(double mouseX, double mouseY) {
+    private List<IStoryElement> getPageComponent(double mouseX, double mouseY, int width) {
         if (currentPage < 0) {
             int cp = contentsPages + currentPage + 1;
             IFormattableTextComponent component = new StringTextComponent(TextFormatting.BOLD + "Contents (" + cp + "/" + contentsPages + ")\n" + TextFormatting.RESET);
@@ -175,7 +172,8 @@ public class GuiStory extends Screen {
             }
             return Collections.singletonList(new TextStoryElement(component));
         } else {
-            return Config.getChapters().get(discoveredPages.get(currentPage));
+            List<Token> tokens = Config.getChapters().get(discoveredPages.get(currentPage));
+
         }
     }
 
