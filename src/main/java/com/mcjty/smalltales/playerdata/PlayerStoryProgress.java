@@ -12,12 +12,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class PlayerStory {
+public class PlayerStoryProgress {
 
     private List<String> discovered = new ArrayList<>();
     private Set<String> read = new HashSet<>();
 
-    public PlayerStory() {
+    public PlayerStoryProgress() {
     }
 
     public void reset() {
@@ -48,7 +48,7 @@ public class PlayerStory {
         read.add(id);
     }
 
-    public void copyFrom(PlayerStory source) {
+    public void copyFrom(PlayerStoryProgress source) {
         discovered = new ArrayList<>(source.discovered);
     }
 

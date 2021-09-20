@@ -1,4 +1,4 @@
-package com.mcjty.smalltales.modules.story.parser;
+package com.mcjty.smalltales.parser;
 
 public class Cursor extends IntPair {
 

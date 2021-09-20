@@ -1,7 +1,7 @@
 package com.mcjty.smalltales.playerdata;
 
-import com.mcjty.smalltales.modules.story.network.PacketSyncStory;
-import com.mcjty.smalltales.modules.story.parser.Token;
+import com.mcjty.smalltales.modules.story.network.PacketSyncStoryProgress;
+import com.mcjty.smalltales.parser.Token;
 import com.mcjty.smalltales.setup.Config;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
@@ -20,8 +20,8 @@ import java.util.Map;
 
 public class StoryTools {
 
-    @CapabilityInject(PlayerStory.class)
-    public static Capability<PlayerStory> PLAYER_STORY;
+    @CapabilityInject(PlayerStoryProgress.class)
+    public static Capability<PlayerStoryProgress> PLAYER_STORY;
 
     public static void acquireKnowledge(PlayerEntity player, String chapter, String message, boolean reportAlreadyKnown) {
         Map<String, List<Token>> chapters = Config.getChapters();
@@ -56,7 +56,7 @@ public class StoryTools {
                     playSound(player, Config.MESSAGE_SOUND);
                 }
             }
-            PacketSyncStory.syncStory(story, player);
+            PacketSyncStoryProgress.syncStoryProgress(story, player);
         });
     }
 

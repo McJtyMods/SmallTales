@@ -1,6 +1,6 @@
 package com.mcjty.smalltales.modules.story.network;
 
-import com.mcjty.smalltales.playerdata.PlayerStory;
+import com.mcjty.smalltales.playerdata.PlayerStoryProgress;
 import com.mcjty.smalltales.playerdata.StoryTools;
 import com.mcjty.smalltales.setup.Messages;
 import net.minecraft.network.PacketBuffer;
@@ -31,7 +31,7 @@ public class PackedMarkRead {
         return true;
     }
 
-    public static void markRead(PlayerStory story, String page) {
+    public static void markRead(PlayerStoryProgress story, String page) {
         Messages.INSTANCE.sendToServer(new PackedMarkRead(page));
     }
 }

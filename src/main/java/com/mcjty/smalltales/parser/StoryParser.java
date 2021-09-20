@@ -1,10 +1,14 @@
-package com.mcjty.smalltales.modules.story.parser;
+package com.mcjty.smalltales.parser;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.mcjty.smalltales.SmallTales;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -60,4 +64,19 @@ public class StoryParser {
         }
         return tokens;
     }
+
+    public static void parseStoryJson(String path) {
+        File directory = new File(path + File.separator + "smalltales");
+        if (!directory.exists()) {
+            directory.mkdir();
+        }
+        JsonElement element = JSonTools.getRootElement(path, "story.json", SmallTales.setup.getLogger());
+        if (element == null || !element.isJsonObject()) {
+            throw new RuntimeException("This is not a json object!");
+        }
+        JsonObject object = element.getAsJsonObject();
+        JsonElement chapters = object.get("chapters");
+        JsonElement messages = object.get("messages");
+    }
+
 }

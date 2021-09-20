@@ -1,8 +1,8 @@
 package com.mcjty.smalltales.setup;
 
 
-import com.mcjty.smalltales.modules.story.parser.StoryParser;
-import com.mcjty.smalltales.modules.story.parser.Token;
+import com.mcjty.smalltales.parser.StoryParser;
+import com.mcjty.smalltales.parser.Token;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.Builder;

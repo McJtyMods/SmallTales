@@ -1,7 +1,7 @@
 package com.mcjty.smalltales.commands;
 
 import com.mcjty.smalltales.SmallTales;
-import com.mcjty.smalltales.modules.story.network.PacketSyncStory;
+import com.mcjty.smalltales.modules.story.network.PacketSyncStoryProgress;
 import com.mcjty.smalltales.playerdata.StoryTools;
 import com.mcjty.smalltales.setup.Config;
 import com.mojang.brigadier.CommandDispatcher;
@@ -50,7 +50,7 @@ public class ModCommands {
                             ServerPlayerEntity player = context.getSource().getPlayerOrException();
                             player.getCapability(StoryTools.PLAYER_STORY).ifPresent(story -> {
                                 story.addDiscovered(page);
-                                PacketSyncStory.syncStory(story, player);
+                                PacketSyncStoryProgress.syncStoryProgress(story, player);
                             });
                             return 0;
                         }));
@@ -63,7 +63,7 @@ public class ModCommands {
                     ServerPlayerEntity player = context.getSource().getPlayerOrException();
                     player.getCapability(StoryTools.PLAYER_STORY).ifPresent(story -> {
                         story.reset();
-                        PacketSyncStory.syncStory(story, player);
+                        PacketSyncStoryProgress.syncStoryProgress(story, player);
                     });
                     return 0;
                 });

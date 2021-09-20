@@ -3,10 +3,10 @@ package com.mcjty.smalltales.modules.story.client;
 import com.google.common.collect.Lists;
 import com.mcjty.smalltales.SmallTales;
 import com.mcjty.smalltales.modules.story.network.PackedMarkRead;
-import com.mcjty.smalltales.modules.story.parser.StoryRenderer;
-import com.mcjty.smalltales.modules.story.parser.Token;
-import com.mcjty.smalltales.modules.story.parser.TokenCommand;
-import com.mcjty.smalltales.playerdata.PlayerStory;
+import com.mcjty.smalltales.parser.StoryRenderer;
+import com.mcjty.smalltales.parser.Token;
+import com.mcjty.smalltales.parser.TokenCommand;
+import com.mcjty.smalltales.playerdata.PlayerStoryProgress;
 import com.mcjty.smalltales.playerdata.StoryTools;
 import com.mcjty.smalltales.setup.Config;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import static com.mcjty.smalltales.modules.story.parser.Token.*;
+import static com.mcjty.smalltales.parser.Token.*;
 
 public class GuiStory extends Screen {
 
@@ -55,10 +55,10 @@ public class GuiStory extends Screen {
 
     private void setupPages() {
         discoveredPages = minecraft.player.getCapability(StoryTools.PLAYER_STORY)
-                .map(PlayerStory::getDiscovered)
+                .map(PlayerStoryProgress::getDiscovered)
                 .orElse(Collections.emptyList());
         readPages = minecraft.player.getCapability(StoryTools.PLAYER_STORY)
-                .map(PlayerStory::getRead)
+                .map(PlayerStoryProgress::getRead)
                 .orElse(Collections.emptySet());
         contentsPages = ((discoveredPages.size() - 1) / TOC_ENTRIES_PER_PAGE) + 1;
     }
