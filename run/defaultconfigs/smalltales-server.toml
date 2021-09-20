@@ -3,7 +3,7 @@
 [story]
 	#A list of chapters
 	chapters = [
-	"main={#}The story{}{p}{p}You wake up from a deep sleep and discover this {4}{#}new mod{}{p}{p}After running around for a while you can see it is about telling a story!",
+	"main={#}The story{I:smalltales:textures/item/the_story.png}{}{p}{p}You wake up from a deep sleep and discover this {4}{#}new mod{}{p}{p}After running around for a while you can see it is about telling a story!",
 	"tree={#}Tree{}{p}{p}This {/}dark tree{} has a trunk and leaves. That's extremely suspicious. Almost too normal",
 	"cellar={#}Cellar{}{p}{p}This dark cellar holds many secrets!{p}{i:minecraft:diamond}{i:minecraft:emerald}{i:minecraft:iron_ingot}{p}I wish it was {4}wine{}!",
 	"k1=This is k1",

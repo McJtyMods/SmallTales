@@ -6,6 +6,7 @@ public enum TokenType {
     CHARACTER,
     SPACE,
     ITEM,
+    IMAGE,
     ERROR,
     END
 }

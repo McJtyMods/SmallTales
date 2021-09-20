@@ -71,6 +71,14 @@ public class Token {
                 }
                 return new Token(type, modid + ":" + name);
             }
+            case IMAGE: {
+                buffer.skipUntil(':');
+                String file = buffer.skipWhile(c -> Character.isJavaIdentifierPart(c) || c == '/' || c == ':' || c == '.');
+                if (!buffer.skip('}')) {
+                    return new Token(TokenType.ERROR, "Missing '}'");
+                }
+                return new Token(type, file);
+            }
             case WORD: {
                 String word = buffer.skipWhile(Token::isWordChar);
                 return new Token(type, word);
@@ -103,8 +111,11 @@ public class Token {
         }
         char first = buffer.peek();
         if (first == '{') {
-            if ("{i:".equals(buffer.peek(3))) {
+            String peek3 = buffer.peek(3);
+            if ("{i:".equals(peek3)) {
                 return TokenType.ITEM;
+            } else if ("{I:".equals(peek3)) {
+                return TokenType.IMAGE;
             }
             return TokenType.COMMAND;
         }

@@ -112,6 +112,7 @@ public class GuiStory extends Screen {
 
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.minecraft.getTextureManager().bind(GUI);
+
         int relX = (this.width - WIDTH) / 2;
         int relY = (this.height - HEIGHT) / 2;
         this.blit(matrixStack, relX, relY, 0, 0, WIDTH, HEIGHT);
@@ -137,7 +138,7 @@ public class GuiStory extends Screen {
             this.blit(matrixStack, relX + WIDTH - 25, relY - 15, u, 238, 21, 14);
 
             List<Token> tokens = getPageTokens(mouseX, mouseY);
-            StoryRenderer renderer = new StoryRenderer(this.font, matrixStack, this.itemRenderer, left, top);
+            StoryRenderer renderer = new StoryRenderer(this, this.font, matrixStack, this.itemRenderer, left, top);
 
             tokens.forEach(token -> renderer.render(token, WIDTH-30));
         }
