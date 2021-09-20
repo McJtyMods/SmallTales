@@ -2,6 +2,7 @@ package com.mcjty.smalltales.modules.story.parser;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.ItemRenderer;
@@ -177,7 +178,7 @@ public class StoryRenderer {
     private void draw(String image, Cursor cursor) {
         Minecraft.getInstance().getTextureManager().bind(new ResourceLocation(image));
         IntPair dim = getImageDimension(image);
-        screen.blit(matrixStack, cursor.getX(), cursor.getY(), 0, 0, dim.getX(), dim.getY());
+        AbstractGui.blit(matrixStack, cursor.getX(), cursor.getY(), 0, 0, 0, dim.getX(), dim.getY(), dim.getX(), dim.getY());
     }
 
     private void draw(ITextComponent component, Cursor cursor) {
