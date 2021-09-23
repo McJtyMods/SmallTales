@@ -2,6 +2,8 @@ package com.mcjty.smalltales.modules.story.client;
 
 import com.google.common.collect.Lists;
 import com.mcjty.smalltales.SmallTales;
+import com.mcjty.smalltales.modules.story.data.Chapter;
+import com.mcjty.smalltales.modules.story.data.Story;
 import com.mcjty.smalltales.modules.story.network.PackedMarkRead;
 import com.mcjty.smalltales.parser.StoryRenderer;
 import com.mcjty.smalltales.parser.Token;
@@ -178,7 +180,13 @@ public class GuiStory extends Screen {
             }
             return tokens;
         } else {
-            return Config.getChapters().get(discoveredPages.get(currentPage));
+            Story story = Story.getStory(Minecraft.getInstance().level);
+            if (story == null) {
+                return Collections.emptyList();
+            } else {
+                Chapter chapter = story.getChapters().get(discoveredPages.get(currentPage));
+                return chapter == null ? Collections.emptyList() : chapter.getTokens();
+            }
         }
     }
 

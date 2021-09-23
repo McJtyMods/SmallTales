@@ -1,7 +1,8 @@
 package com.mcjty.smalltales.playerdata;
 
+import com.mcjty.smalltales.modules.story.data.Chapter;
+import com.mcjty.smalltales.modules.story.data.Story;
 import com.mcjty.smalltales.modules.story.network.PacketSyncStoryProgress;
-import com.mcjty.smalltales.parser.Token;
 import com.mcjty.smalltales.setup.Config;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
@@ -15,7 +16,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.List;
 import java.util.Map;
 
 public class StoryTools {
@@ -24,8 +24,12 @@ public class StoryTools {
     public static Capability<PlayerStoryProgress> PLAYER_STORY;
 
     public static void acquireKnowledge(PlayerEntity player, String chapter, String message, boolean reportAlreadyKnown) {
-        Map<String, List<Token>> chapters = Config.getChapters();
-        Map<String, ITextComponent> messages = Config.getMessages();
+        Story story = Story.getStory(player.level);
+        if (story == null) {
+            return; // Nothing to do here
+        }
+        Map<String, Chapter> chapters = story.getChapters();
+        Map<String, ITextComponent> messages = story.getMessages();
         if (chapter != null && !chapters.containsKey(chapter)) {
             chapter = null;
         }
@@ -36,27 +40,30 @@ public class StoryTools {
         String finalChapter = chapter;
         String finalMessage = message;
 
-        player.getCapability(StoryTools.PLAYER_STORY).ifPresent(story -> {
+        player.getCapability(StoryTools.PLAYER_STORY).ifPresent(progress -> {
             if (finalChapter != null) {
-                if (story.addDiscovered(finalChapter)) {
+                if (progress.addDiscovered(finalChapter)) {
                     if (finalMessage != null) {
                         player.sendMessage(messages.get(finalMessage), Util.NIL_UUID);
                     } else {
+                        // @todo THIS NEEDS to be the translated text and done client side!
                         player.sendMessage(new StringTextComponent("You discover " + finalChapter + "!"), Util.NIL_UUID);
                     }
                     playSound(player, Config.CHAPTER_SOUND);
                 } else {
                     if (reportAlreadyKnown) {
+                        // @todo THIS NEEDS to be the translated text and done client side!
                         player.sendMessage(new StringTextComponent("You already know " + finalChapter + "!"), Util.NIL_UUID);
                     }
                 }
             } else if (finalMessage != null) {
-                if (story.addDiscovered(finalMessage)) {
+                if (progress.addDiscovered(finalMessage)) {
+                    // @todo THIS NEEDS to be the translated text and done client side!
                     player.sendMessage(messages.get(finalMessage), Util.NIL_UUID);
                     playSound(player, Config.MESSAGE_SOUND);
                 }
             }
-            PacketSyncStoryProgress.syncStoryProgress(story, player);
+            PacketSyncStoryProgress.syncProgressToClient(progress, player);
         });
     }
 

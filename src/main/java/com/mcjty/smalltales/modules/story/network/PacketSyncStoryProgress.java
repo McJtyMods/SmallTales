@@ -57,7 +57,7 @@ public class PacketSyncStoryProgress {
         return true;
     }
 
-    public static void syncStoryProgress(PlayerStoryProgress story, PlayerEntity player) {
+    public static void syncProgressToClient(PlayerStoryProgress story, PlayerEntity player) {
         Messages.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player),
                 new PacketSyncStoryProgress(story.getDiscovered(), story.getRead()));
     }

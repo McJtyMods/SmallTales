@@ -1,8 +1,11 @@
 package com.mcjty.smalltales.parser;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mcjty.smalltales.SmallTales;
+import com.mcjty.smalltales.modules.story.data.Chapter;
+import com.mcjty.smalltales.modules.story.data.Story;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -70,13 +73,58 @@ public class StoryParser {
         if (!directory.exists()) {
             directory.mkdir();
         }
-        JsonElement element = JSonTools.getRootElement(path, "story.json", SmallTales.setup.getLogger());
-        if (element == null || !element.isJsonObject()) {
-            throw new RuntimeException("This is not a json object!");
+        File[] files = directory.listFiles((dir, name) -> name.startsWith("story_") && name.endsWith(".json"));
+        if (files == null) {
+            files = new File[0];
         }
-        JsonObject object = element.getAsJsonObject();
-        JsonElement chapters = object.get("chapters");
+        for (File file : files) {
+            JsonElement element = JSonTools.getRootElement(path, file.getName(), SmallTales.setup.getLogger());
+            if (element == null || !element.isJsonObject()) {
+                throw new RuntimeException("This is not a json object!");
+            }
+            String language = file.getName().substring(6, file.getName().indexOf(".json"));
+            JsonObject object = element.getAsJsonObject();
+            parseStory(language, object);
+        }
+
+    }
+
+    private static void parseStory(String language, JsonObject object) {
+        Story story = new Story();
+        parseChapters(story, object);
+        parseMessages(story, object);
+        Story.register(language, story);
+    }
+
+    private static void parseMessages(Story story, JsonObject object) {
         JsonElement messages = object.get("messages");
+        for (JsonElement messageElement : messages.getAsJsonArray()) {
+            JsonObject messageObject = messageElement.getAsJsonObject();
+            String name = messageObject.get("name").getAsString();
+            String text = messageObject.get("text").getAsString();
+            story.addMessage(name, StoryParser.parseComponent(text));
+        }
+    }
+
+    private static void parseChapters(Story story, JsonObject object) {
+        JsonElement chapters = object.get("chapters");
+        for (JsonElement chapterElement : chapters.getAsJsonArray()) {
+            JsonObject chapterObject = chapterElement.getAsJsonObject();
+            String name = chapterObject.get("name").getAsString();
+            String title = chapterObject.get("title").getAsString();
+            JsonElement textTokens = chapterObject.get("text");
+            String text;
+            if (textTokens.isJsonPrimitive()) {
+                text = textTokens.getAsString();
+            } else {
+                text = "";
+                JsonArray array = textTokens.getAsJsonArray();
+                for (JsonElement element : array) {
+                    text += element.getAsString();
+                }
+            }
+            story.addChapter(new Chapter(name, title, StoryParser.tokenize(text)));
+        }
     }
 
 }

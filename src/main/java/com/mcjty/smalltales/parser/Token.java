@@ -1,5 +1,7 @@
 package com.mcjty.smalltales.parser;
 
+import net.minecraft.network.PacketBuffer;
+
 import javax.annotation.Nonnull;
 
 public class Token {
@@ -23,14 +25,29 @@ public class Token {
         this.command = command;
     }
 
+    public Token(PacketBuffer buf) {
+        type = TokenType.values()[buf.readShort()];
+        command = TokenCommand.values()[buf.readShort()];
+        text = buf.readUtf(32767);
+    }
+
+    public void toBytes(PacketBuffer buf) {
+        buf.writeShort(type.ordinal());
+        buf.writeShort(command.ordinal());
+        buf.writeUtf(text);
+    }
+
+    @Nonnull
     public TokenType getType() {
         return type;
     }
 
+    @Nonnull
     public String getText() {
         return text;
     }
 
+    @Nonnull
     public TokenCommand getCommand() {
         return command;
     }

@@ -2,7 +2,9 @@ package com.mcjty.smalltales.setup;
 
 import com.mcjty.smalltales.SmallTales;
 import com.mcjty.smalltales.commands.ModCommands;
+import com.mcjty.smalltales.modules.story.data.Story;
 import com.mcjty.smalltales.modules.story.items.TheStoryItem;
+import com.mcjty.smalltales.modules.story.network.PacketSyncStory;
 import com.mcjty.smalltales.modules.story.network.PacketSyncStoryProgress;
 import com.mcjty.smalltales.parser.StoryParser;
 import com.mcjty.smalltales.playerdata.PlayerStoryProgress;
@@ -22,6 +24,8 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
+
+import java.util.Map;
 
 public class ForgeEventHandlers {
 
@@ -73,7 +77,10 @@ public class ForgeEventHandlers {
 
     @SubscribeEvent
     public void onPlayerLogon(PlayerEvent.PlayerLoggedInEvent event) {
-        event.getPlayer().getCapability(StoryTools.PLAYER_STORY).ifPresent(story -> PacketSyncStoryProgress.syncStoryProgress(story, event.getPlayer()));
+        event.getPlayer().getCapability(StoryTools.PLAYER_STORY).ifPresent(story -> PacketSyncStoryProgress.syncProgressToClient(story, event.getPlayer()));
+        for (Map.Entry<String, Story> entry : Story.getStories().entrySet()) {
+            PacketSyncStory.syncStoryToClient(entry.getKey(), entry.getValue(), event.getPlayer());
+        }
     }
 }
 

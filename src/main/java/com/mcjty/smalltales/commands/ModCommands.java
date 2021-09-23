@@ -1,9 +1,9 @@
 package com.mcjty.smalltales.commands;
 
 import com.mcjty.smalltales.SmallTales;
+import com.mcjty.smalltales.modules.story.data.Story;
 import com.mcjty.smalltales.modules.story.network.PacketSyncStoryProgress;
 import com.mcjty.smalltales.playerdata.StoryTools;
-import com.mcjty.smalltales.setup.Config;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
@@ -13,6 +13,7 @@ import net.minecraft.command.Commands;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.Util;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 
 public class ModCommands {
 
@@ -50,7 +51,7 @@ public class ModCommands {
                             ServerPlayerEntity player = context.getSource().getPlayerOrException();
                             player.getCapability(StoryTools.PLAYER_STORY).ifPresent(story -> {
                                 story.addDiscovered(page);
-                                PacketSyncStoryProgress.syncStoryProgress(story, player);
+                                PacketSyncStoryProgress.syncProgressToClient(story, player);
                             });
                             return 0;
                         }));
@@ -63,7 +64,7 @@ public class ModCommands {
                     ServerPlayerEntity player = context.getSource().getPlayerOrException();
                     player.getCapability(StoryTools.PLAYER_STORY).ifPresent(story -> {
                         story.reset();
-                        PacketSyncStoryProgress.syncStoryProgress(story, player);
+                        PacketSyncStoryProgress.syncProgressToClient(story, player);
                     });
                     return 0;
                 });
@@ -74,7 +75,12 @@ public class ModCommands {
                 .requires(cs -> cs.hasPermission(2))
                 .executes(context -> {
                     ServerPlayerEntity player = context.getSource().getPlayerOrException();
-                    Config.getChapters().forEach((s, text) -> player.sendMessage(new StringTextComponent("Chapter:" + s), Util.NIL_UUID));
+                    Story story = Story.getStory(player.getLevel());
+                    if (story == null) {
+                        player.sendMessage(new StringTextComponent("No story!").withStyle(TextFormatting.RED), Util.NIL_UUID);
+                    } else {
+                        story.getChapters().forEach((s, text) -> player.sendMessage(new StringTextComponent("Chapter:" + s), Util.NIL_UUID));
+                    }
                     return 0;
                 });
     }
