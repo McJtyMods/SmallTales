@@ -14,25 +14,19 @@ import java.util.stream.Stream;
 
 public class JSonTools {
 
-    public static JsonElement getRootElement(String path, String filename, Logger logger) {
-        File file;
-        if (path == null) {
-            file = new File(filename);
-        } else {
-            file = new File(path + File.separator + "smalltales", filename);
-        }
+    public static JsonElement getRootElement(File file, Logger logger) {
         if (!file.exists()) {
             // Create an empty rule file
             makeEmptyFile(file, logger);
             return null;
         }
 
-        logger.log(Level.INFO, "Reading rules from " + filename);
+        logger.log(Level.INFO, "Reading rules from " + file.getName());
         InputStream inputstream = null;
         try {
             inputstream = new FileInputStream(file);
         } catch (FileNotFoundException e) {
-            logger.log(Level.ERROR, "Error reading " + filename + "!");
+            logger.log(Level.ERROR, "Error reading " + file.getName() + "!");
             return null;
         }
 
@@ -40,7 +34,7 @@ public class JSonTools {
         try {
             br = new BufferedReader(new InputStreamReader(inputstream, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
-            logger.log(Level.ERROR, "Error reading " + filename + "!");
+            logger.log(Level.ERROR, "Error reading " + file.getName() + "!");
             return null;
         }
 

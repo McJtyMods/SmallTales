@@ -3,7 +3,6 @@ package com.mcjty.smalltales.setup;
 import com.mcjty.smalltales.SmallTales;
 import com.mcjty.smalltales.commands.ModCommands;
 import com.mcjty.smalltales.modules.story.data.Story;
-import com.mcjty.smalltales.modules.story.items.TheStoryItem;
 import com.mcjty.smalltales.modules.story.network.PacketSyncStory;
 import com.mcjty.smalltales.modules.story.network.PacketSyncStoryProgress;
 import com.mcjty.smalltales.parser.StoryParser;
@@ -12,19 +11,19 @@ import com.mcjty.smalltales.playerdata.PropertiesDispatcher;
 import com.mcjty.smalltales.playerdata.StoryTools;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraft.world.storage.FolderName;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
+import net.minecraftforge.fml.loading.FMLConfig;
+import net.minecraftforge.fml.loading.FMLPaths;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Map;
 
 public class ForgeEventHandlers {
@@ -36,20 +35,12 @@ public class ForgeEventHandlers {
 
     @SubscribeEvent
     public void onWorldLoad(FMLServerStartedEvent event) {
-        String path = event.getServer().getWorldPath(FolderName.ROOT).toString();
-        StoryParser.parseStoryJson(path);
-    }
-
-    @SubscribeEvent
-    public void onPlayerInteract(PlayerInteractEvent.RightClickBlock event) {
-        if (event.getItemStack().getItem() instanceof TheStoryItem) {
-            BlockPos pos = event.getHitVec().getBlockPos();
-            World world = event.getWorld();
-            TileEntity blockEntity = world.getBlockEntity(pos);
-//            if (blockEntity instanceof AbstractSignTileEntity) {
-//                event.setUseBlock(Event.Result.DENY);
-//                event.setUseItem(Event.Result.ALLOW);
-//            }
+        Path path = event.getServer().getWorldPath(FolderName.ROOT);
+        Path defaultConfigPath = FMLPaths.GAMEDIR.get().resolve(FMLConfig.defaultConfigPath());
+        try {
+            StoryParser.parseStoryJson(defaultConfigPath, path);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

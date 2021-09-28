@@ -184,6 +184,7 @@ public class GuiStory extends Screen {
             if (story == null) {
                 return Collections.emptyList();
             } else {
+                markRead();
                 Chapter chapter = story.getChapters().get(discoveredPages.get(currentPage));
                 return chapter == null ? Collections.emptyList() : chapter.getTokens();
             }

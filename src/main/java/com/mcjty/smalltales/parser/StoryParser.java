@@ -11,7 +11,11 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,25 +72,45 @@ public class StoryParser {
         return tokens;
     }
 
-    public static void parseStoryJson(String path) {
-        File directory = new File(path + File.separator + "smalltales");
-        if (!directory.exists()) {
-            directory.mkdir();
+    public static void parseStoryJson(Path defaultConfigPath, Path path) throws IOException {
+        Path destinationDir = path.resolve("smalltales");
+        if (!Files.exists(destinationDir)) {
+            Files.createDirectory(destinationDir);
         }
-        File[] files = directory.listFiles((dir, name) -> name.startsWith("story_") && name.endsWith(".json"));
-        if (files == null) {
-            files = new File[0];
-        }
-        for (File file : files) {
-            JsonElement element = JSonTools.getRootElement(path, file.getName(), SmallTales.setup.getLogger());
+
+        copyDefaultStories(defaultConfigPath, destinationDir);
+
+        Files.newDirectoryStream(destinationDir, StoryParser::isStoryFile).forEach(file -> {
+            JsonElement element = JSonTools.getRootElement(file.toFile(), SmallTales.setup.getLogger());
             if (element == null || !element.isJsonObject()) {
                 throw new RuntimeException("This is not a json object!");
             }
-            String language = file.getName().substring(6, file.getName().indexOf(".json"));
+            String language = file.getFileName().toString().substring(6, file.getFileName().toString().indexOf(".json"));
             JsonObject object = element.getAsJsonObject();
             parseStory(language, object);
+        });
+    }
+
+    private static void copyDefaultStories(Path defaultConfigPath, Path destinationDir) throws IOException {
+        Path sourceDir = defaultConfigPath.resolve("smalltales");
+        if (!Files.exists(sourceDir)) {
+            return;
         }
 
+        Files.newDirectoryStream(sourceDir, StoryParser::isStoryFile).forEach(file -> {
+            Path destination = destinationDir.resolve(file.getFileName());
+            if (!Files.exists(destination, LinkOption.NOFOLLOW_LINKS)) {
+                try {
+                    Files.copy(file, destination, StandardCopyOption.COPY_ATTRIBUTES);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+    }
+
+    private static boolean isStoryFile(Path name) {
+        return name.getFileName().toString().startsWith("story_") && name.getFileName().toString().endsWith(".json");
     }
 
     private static void parseStory(String language, JsonObject object) {

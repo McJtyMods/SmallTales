@@ -50,6 +50,7 @@ public class PlayerStoryProgress {
 
     public void copyFrom(PlayerStoryProgress source) {
         discovered = new ArrayList<>(source.discovered);
+        read = new HashSet<>(source.read);
     }
 
     public void saveNBTData(CompoundNBT compound) {
