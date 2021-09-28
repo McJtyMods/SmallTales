@@ -5,7 +5,8 @@
       "title": "Introduction",
       "text": [
         "{#}Introduction{}{p}{p}",
-        "This mod is all about telling a story ({I:smalltales:textures/item/the_story.png}). Read the wiki for more information on how to do this and how to configure the story"
+        "{C}{I:smalltales:textures/item/the_story.png}{p}{p}",
+        "This mod is all about telling a story. Read the wiki for more information on how to do this and how to configure the story"
       ]
     }
   ],

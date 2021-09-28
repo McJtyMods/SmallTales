@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 public class StoryRenderer {
 
@@ -28,11 +29,14 @@ public class StoryRenderer {
     private final MatrixStack matrixStack;
     private final ItemRenderer itemRenderer;
 
+    private List<BiConsumer<Integer, Integer>> currentLine = new ArrayList<>();
+
     private List<TextFormatting> currentFormat = new ArrayList<>();
     private final Cursor cursor;
     private final int left;
     private final Map<String, IntPair> imageDimensionCache = new HashMap<>();
     private int maxHeight = 0;
+    private boolean doCenter = false;
 
     public StoryRenderer(Screen screen, FontRenderer font, MatrixStack matrixStack, ItemRenderer itemRenderer, int left, int top) {
         this.screen = screen;
@@ -57,39 +61,69 @@ public class StoryRenderer {
         return imageDimensionCache.get(image);
     }
 
+    public void flush(int width) {
+        int xOffset = getXOffset(width);
+        int yOffset = getYOffset();
+
+        currentLine.forEach(code -> code.accept(xOffset, yOffset));
+        currentLine.clear();
+        cursor.nextLine(left, maxHeight);
+        maxHeight = 0;
+        doCenter = false;
+    }
+
+    private int getXOffset(int width) {
+        int xOffset = 0;
+        if (doCenter) {
+            int w = cursor.getX() - left;
+            xOffset = (width-w) / 2;
+        }
+        return xOffset;
+    }
+
+    private int getYOffset() {
+        return 0;
+    }
+
     public void render(Token token, int width) {
         int w = getWidth(token);
         int h = getHeight(token);
         if (cursor.getX() + w >= left+width) {
-            cursor.nextLine(left, maxHeight);
-            maxHeight = 0;
+            flush(width);
         }
         if (h > maxHeight) {
             maxHeight = h;
         }
+        int cx = cursor.getX();
+        int cy = cursor.getY();
         switch (token.getType()) {
             case COMMAND:
-                renderCommand(token.getCommand());
+                renderCommand(token.getCommand(), width);
                 break;
             case ITEM:
-                renderItem(token.getText());
+                currentLine.add((x, y) -> renderItem(token.getText(), cx +x, cy +y));
                 cursor.shift(w);
                 break;
             case IMAGE:
-                draw(token.getText(), cursor);
+                currentLine.add((x, y) -> draw(token.getText(), cx +x, cy +y));
                 cursor.shift(getImageDimension(token.getText()).getX());
                 break;
-            case WORD:
-                draw(createComponent(token.getText()), cursor);
+            case WORD: {
+                ITextComponent component = createComponent(token.getText());
+                currentLine.add((x, y) -> draw(component, cx + x, cy + y));
                 cursor.shift(w);
                 break;
-            case CHARACTER:
-                draw(createComponent(token.getText()), cursor);
+            }
+            case CHARACTER: {
+                ITextComponent component = createComponent(token.getText());
+                currentLine.add((x, y) -> draw(component, cx + x, cy + y));
                 cursor.shift(w);
                 break;
+            }
             case SPACE:
-                if (cursor.getX() != left) {
-                    draw(createComponent(token.getText()), cursor);
+                if (cx != left) {
+                    ITextComponent component = createComponent(token.getText());
+                    currentLine.add((x, y) -> draw(component, cx +x, cy +y));
                     cursor.shift(w);
                 }
                 break;
@@ -100,18 +134,20 @@ public class StoryRenderer {
         }
     }
 
-    private void renderItem(String id) {
+    private void renderItem(String id, int x, int y) {
         Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(id));
-        draw(new ItemStack(item), cursor);
+        draw(new ItemStack(item), x, y);
     }
 
-    private void renderCommand(TokenCommand command) {
+    private void renderCommand(TokenCommand command, int width) {
         switch (command) {
             case CMD_NONE:
                 break;
             case CMD_PARAGRAPH:
-                cursor.nextLine(left, maxHeight);
-                maxHeight = 0;
+                flush(width);
+                break;
+            case CMD_CENTER:
+                doCenter = true;
                 break;
             case CMD_RESET:
                 currentFormat.clear();
@@ -175,17 +211,17 @@ public class StoryRenderer {
         return 0;
     }
 
-    private void draw(String image, Cursor cursor) {
+    private void draw(String image, int x, int y) {
         Minecraft.getInstance().getTextureManager().bind(new ResourceLocation(image));
         IntPair dim = getImageDimension(image);
-        AbstractGui.blit(matrixStack, cursor.getX(), cursor.getY(), 0, 0, 0, dim.getX(), dim.getY(), dim.getX(), dim.getY());
+        AbstractGui.blit(matrixStack, x, y, 0, 0, 0, dim.getX(), dim.getY(), dim.getX(), dim.getY());
     }
 
-    private void draw(ITextComponent component, Cursor cursor) {
-        font.draw(matrixStack, component, cursor.getX(), cursor.getY(), 0x000000);
+    private void draw(ITextComponent component, int x, int y) {
+        font.draw(matrixStack, component, x, y, 0x000000);
     }
 
-    private void draw(ItemStack stack, Cursor cursor) {
-        itemRenderer.renderGuiItem(stack, cursor.getX(), cursor.getY());
+    private void draw(ItemStack stack, int x, int y) {
+        itemRenderer.renderGuiItem(stack, x, y);
     }
 }

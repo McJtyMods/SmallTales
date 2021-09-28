@@ -6,11 +6,13 @@ public class Cursor extends IntPair {
         super(x, y);
     }
 
+    @Override
     public void nextLine(int left, int height) {
         x = left;
         y += height;
     }
 
+    @Override
     public void shift(int amount) {
         x += amount;
     }

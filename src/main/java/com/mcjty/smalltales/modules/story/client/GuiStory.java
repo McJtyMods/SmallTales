@@ -143,6 +143,7 @@ public class GuiStory extends Screen {
             StoryRenderer renderer = new StoryRenderer(this, this.font, matrixStack, this.itemRenderer, left, top);
 
             tokens.forEach(token -> renderer.render(token, WIDTH-30));
+            renderer.flush(WIDTH-30);
         }
     }
 

@@ -9,6 +9,7 @@ import java.util.Map;
 public enum TokenCommand {
     CMD_NONE("", null),
     CMD_PARAGRAPH("{p}", null),
+    CMD_CENTER("{C}", null),
     CMD_BOLD("{#}", TextFormatting.BOLD),
     CMD_ITALIC("{/}", TextFormatting.ITALIC),
     CMD_UNDERLINE("{_}", TextFormatting.UNDERLINE),
