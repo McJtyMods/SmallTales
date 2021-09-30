@@ -1,5 +1,7 @@
 package com.mcjty.smalltales.parser;
 
+import com.mcjty.smalltales.client.ImageSpec;
+import com.mcjty.smalltales.client.NamedImages;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
@@ -47,7 +49,16 @@ public class StoryRenderer {
         this.cursor = new Cursor(left, top);
     }
 
-    private IntPair getImageDimension(String image) {
+    private ImageSpec resolveImage(String image) {
+        if (NamedImages.IMAGES.containsKey(image)) {
+            return NamedImages.IMAGES.get(image);
+        } else {
+            IntPair dim = getActualImageDimension(image);
+            return new ImageSpec(new ResourceLocation(image), 0, 0, dim.x, dim.y);
+        }
+    }
+
+    private IntPair getActualImageDimension(String image) {
         if (!imageDimensionCache.containsKey(image)) {
             SimpleTexture.TextureData data = SimpleTexture.TextureData.load(Minecraft.getInstance().getResourceManager(), new ResourceLocation(image));
             try {
@@ -104,10 +115,12 @@ public class StoryRenderer {
                 currentLine.add((x, y) -> renderItem(token.getText(), cx +x, cy +y));
                 cursor.shift(w);
                 break;
-            case IMAGE:
-                currentLine.add((x, y) -> draw(token.getText(), cx +x, cy +y));
-                cursor.shift(getImageDimension(token.getText()).getX());
+            case IMAGE: {
+                ImageSpec image = resolveImage(token.getText());
+                currentLine.add((x, y) -> draw(image, cx + x, cy + y));
+                cursor.shift(image.getW());
                 break;
+            }
             case WORD: {
                 ITextComponent component = createComponent(token.getText());
                 currentLine.add((x, y) -> draw(component, cx + x, cy + y));
@@ -171,7 +184,7 @@ public class StoryRenderer {
             case ITEM:
                 return 18;
             case IMAGE:
-                return getImageDimension(token.getText()).getX();
+                return resolveImage(token.getText()).getW();
             case WORD:
                 return font.width(createComponent(token.getText()));
             case CHARACTER:
@@ -196,7 +209,7 @@ public class StoryRenderer {
             case ITEM:
                 return 18;
             case IMAGE:
-                return getImageDimension(token.getText()).getY();
+                return resolveImage(token.getText()).getH();
             case WORD:
                 return 10;
             case CHARACTER:
@@ -211,10 +224,10 @@ public class StoryRenderer {
         return 0;
     }
 
-    private void draw(String image, int x, int y) {
-        Minecraft.getInstance().getTextureManager().bind(new ResourceLocation(image));
-        IntPair dim = getImageDimension(image);
-        AbstractGui.blit(matrixStack, x, y, 0, 0, 0, dim.getX(), dim.getY(), dim.getX(), dim.getY());
+    private void draw(ImageSpec image, int x, int y) {
+        Minecraft.getInstance().getTextureManager().bind(image.getId());
+        IntPair dim = getActualImageDimension(image.getId().toString());
+        AbstractGui.blit(matrixStack, x, y, 0, image.getX(), image.getY(), image.getW(), image.getH(), dim.getX(), dim.getY());
     }
 
     private void draw(ITextComponent component, int x, int y) {

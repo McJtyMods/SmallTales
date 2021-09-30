@@ -2,6 +2,7 @@ package com.mcjty.smalltales.playerdata;
 
 import com.mcjty.smalltales.modules.story.data.Chapter;
 import com.mcjty.smalltales.modules.story.data.Story;
+import com.mcjty.smalltales.modules.story.network.PacketSendMessage;
 import com.mcjty.smalltales.modules.story.network.PacketSyncStoryProgress;
 import com.mcjty.smalltales.setup.Config;
 import net.minecraft.entity.player.PlayerEntity;
@@ -10,7 +11,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.Util;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -46,20 +47,17 @@ public class StoryTools {
                     if (finalMessage != null) {
                         player.sendMessage(messages.get(finalMessage), Util.NIL_UUID);
                     } else {
-                        // @todo THIS NEEDS to be the translated text and done client side!
-                        player.sendMessage(new StringTextComponent("You discover " + finalChapter + "!"), Util.NIL_UUID);
+                        player.sendMessage(new TranslationTextComponent("message.smalltales.discover", finalChapter), Util.NIL_UUID);
                     }
                     playSound(player, Config.CHAPTER_SOUND);
                 } else {
                     if (reportAlreadyKnown) {
-                        // @todo THIS NEEDS to be the translated text and done client side!
-                        player.sendMessage(new StringTextComponent("You already know " + finalChapter + "!"), Util.NIL_UUID);
+                        player.sendMessage(new TranslationTextComponent("message.smalltales.alreadyknow", finalChapter), Util.NIL_UUID);
                     }
                 }
             } else if (finalMessage != null) {
                 if (progress.addDiscovered(finalMessage)) {
-                    // @todo THIS NEEDS to be the translated text and done client side!
-                    player.sendMessage(messages.get(finalMessage), Util.NIL_UUID);
+                    PacketSendMessage.sendMessageToClient(finalMessage, player);
                     playSound(player, Config.MESSAGE_SOUND);
                 }
             }

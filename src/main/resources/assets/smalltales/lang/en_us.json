@@ -9,6 +9,9 @@
     "itemGroup.smalltales": "SmallTales",
     "message.smalltales.shiftmessage": "<Press Shift>",
 
+    "message.smalltales.discover": "You discover %s!",
+    "message.smalltales.discover": "You already know %s!",
+
     "message.smalltales.configurator.header": "With this tool you can configure story anchors",
     "message.smalltales.story_anchor_stone.header": "A marker for a story point",
     "message.smalltales.story_anchor_invisible.header": "A marker for a story point",

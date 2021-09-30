@@ -1,10 +1,7 @@
 package com.mcjty.smalltales.setup;
 
 import com.mcjty.smalltales.SmallTales;
-import com.mcjty.smalltales.modules.story.network.PackedMarkRead;
-import com.mcjty.smalltales.modules.story.network.PacketSyncStory;
-import com.mcjty.smalltales.modules.story.network.PacketSyncStoryProgress;
-import com.mcjty.smalltales.modules.story.network.PacketUpdateKnowledge;
+import com.mcjty.smalltales.modules.story.network.*;
 import mcjty.lib.network.PacketHandler;
 import mcjty.lib.network.PacketSendClientCommand;
 import mcjty.lib.network.PacketSendServerCommand;
@@ -55,6 +52,11 @@ public class Messages {
                 .encoder(PackedMarkRead::toBytes)
                 .decoder(PackedMarkRead::new)
                 .consumer(PackedMarkRead::handle)
+                .add();
+        net.messageBuilder(PacketSendMessage.class, id())
+                .encoder(PacketSendMessage::toBytes)
+                .decoder(PacketSendMessage::new)
+                .consumer(PacketSendMessage::handle)
                 .add();
 
         PacketHandler.registerStandardMessages(id(), net);
