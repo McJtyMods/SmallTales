@@ -34,7 +34,7 @@ archivesBaseName = 'smalltales'
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
 minecraft {
-    mappings channel: 'parchment', version: '2021.08.29-1.16.5'
+    mappings channel: 'parchment', version: "2021.10.03-1.16.5"
     runs {
         client {
             workingDirectory project.file('run')
@@ -82,7 +82,7 @@ sourceSets.main.resources {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.16.5-36.1.1'
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
     compileOnly fg.deobf("mezz.jei:jei-${jei_version}:api")
     runtimeOnly fg.deobf("mezz.jei:jei-${jei_version}")
