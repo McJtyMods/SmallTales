@@ -52,3 +52,9 @@ Signs signs and signs
     versionRange="[1.16.5,)"
     ordering="NONE"
     side="BOTH"
+[[dependencies.smalltales]]
+    modId="mcjtylib"
+    mandatory=true
+    versionRange="[1.16-5.1.0,)"
+    ordering="AFTER"
+    side="BOTH"

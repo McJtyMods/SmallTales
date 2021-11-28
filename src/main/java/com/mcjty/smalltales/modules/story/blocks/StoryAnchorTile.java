@@ -117,6 +117,12 @@ public class StoryAnchorTile extends GenericTileEntity implements ITickableTileE
 
     @Override
     protected void readInfo(CompoundNBT tagCompound) {
+        readClientDataFromNBT(tagCompound);
+        super.readInfo(tagCompound);
+    }
+
+    @Override
+    public void readClientDataFromNBT(CompoundNBT tagCompound) {
         CompoundNBT info = tagCompound.getCompound("Info");
         if (info.contains("chapter")) {
             chapter = info.getString("chapter");
@@ -130,11 +136,16 @@ public class StoryAnchorTile extends GenericTileEntity implements ITickableTileE
         }
         onActivate = info.getBoolean("onactivate");
         range = info.getInt("range");
-        super.readInfo(tagCompound);
     }
 
     @Override
     protected void writeInfo(CompoundNBT tagCompound) {
+        writeClientDataToNBT(tagCompound);
+        super.writeInfo(tagCompound);
+    }
+
+    @Override
+    public void writeClientDataToNBT(CompoundNBT tagCompound) {
         CompoundNBT info = getOrCreateInfo(tagCompound);
         if (chapter != null) {
             info.putString("chapter", chapter);
@@ -144,6 +155,5 @@ public class StoryAnchorTile extends GenericTileEntity implements ITickableTileE
         }
         info.putBoolean("onactivate", onActivate);
         info.putInt("range", range);
-        super.writeInfo(tagCompound);
     }
 }
